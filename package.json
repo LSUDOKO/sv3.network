@@ -1,0 +1,17 @@
+{
+  "name": "nexth",
+  "version": "0.2.0",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "app:dev": "cd packages/app && bun run dev",
+    "foundry:dev": "cd packages/foundry && bun run dev",
+    "hardhat:dev": "cd packages/hardhat && bun run dev",
+    "dev": "bun run dev",
+    "build": "bun run build",
+    "test": "bun run test"
+  }
+}
