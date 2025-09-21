@@ -2,7 +2,7 @@ import { join } from 'path'
 import dotenv from 'dotenv'
 
 dotenv.config() // project root
-dotenv.config({ path: join(process.cwd(), '../../.env') }) // workspace root
+dotenv.config({ path: [join(process.cwd(), '../../.env'), '.env', '../.env', '../../.env']}) // workspace root
 
 export const CONFIG = {
   NODE_ENV: process.env.NODE_ENV || 'development',

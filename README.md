@@ -1,8 +1,8 @@
-# Nexth
+# sv3.network
 
 A Next.js + Ethereum starter kit with Viem, Wagmi, Web3Modal, SIWE, Tailwind, daisyUI and more to quickly ship production-ready Web3 Apps ⚡
 
-![Nexth Readme Image](https://nexth.vercel.app/opengraph-image)
+![sv3.network Readme Image](https://sv3.network/opengraph-image)
 
 ## Packages 📦
 
@@ -46,13 +46,13 @@ bun dev
 
 ## Funding
 
-This project is funding its core dependencies with [Drips protocol](https://www.drips.network/app/projects/github/wslyvh/nexth?exact). A split contract that splits 60% of all proceeds with core contributors and 40% for dependencies.
+This project is funding its core dependencies with [Drips protocol](https://www.drips.network/app/projects/github/SignVault/sv3.network?exact). A split contract that splits 60% of all proceeds with core contributors and 40% for dependencies.
 
 ### Contributors
 
 Contributors to this repository are rewarded based on their contributions to the project. Their contribution score is calculated based on a combination of the commits, issues, pull requests, and other contributions that determine the amount of funding they receives.
 
-The score is calculated using [Contributor Graph](https://github.com/wslyvh/contributor-graph).
+The score is calculated using [Contributor Graph](https://github.com/SignVault/contributor-graph).
 
 ### Distribution
 
@@ -61,8 +61,8 @@ The score is calculated using [Contributor Graph](https://github.com/wslyvh/cont
 
 ## Deploy on Vercel 🚢
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fwslyvh%2Fnexth)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fwslyvh%2Fsv3.network)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=nexth&filter=next.js&utm_source=nexth&utm_campaign=nexth-readme) from the creators of Next.js.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=sv3.network&filter=next.js&utm_source=sv3.network&utm_campaign=sv3.network-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

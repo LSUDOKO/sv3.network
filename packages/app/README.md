@@ -1,4 +1,4 @@
-# Nexth
+# sv3.network
 
 A Next.js + Ethereum starter kit to quickly ship Web3 Apps ⚡
 

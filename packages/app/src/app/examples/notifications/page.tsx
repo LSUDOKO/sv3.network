@@ -9,7 +9,7 @@ export default function NotificationsExample() {
   return (
     <div className='flex-column align-center '>
       <h2 className='text-2xl mb-2'>Notifications</h2>
-      <p>This example is demonstrates how to use the notification system within Nexth.</p>
+      <p>This example is demonstrates how to use the notification system within sv3.network.</p>
 
       <div className='flex flex-wrap gap-4 mt-4'>
         <button className='btn btn-sm btn-info' onClick={() => Add('Transaction sent..', { type: 'info' })}>
