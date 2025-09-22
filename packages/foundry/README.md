@@ -1,84 +1,139 @@
-# Smart Contracts
+# SignVault Smart Contracts
 
-This project demonstrates how to add smart contracts to your project using [Foundry](https://book.getfoundry.sh/). It provides a sample `Message` contract, a test and deployment scripts.
+This package contains the core smart contracts for the SignVault document signing platform.
 
-## Usage
+## Contracts
 
-### Build
+- **DocumentRWA.sol** - Main contract for document management and NFT minting
+- **Organization.sol** - Organization management and membership
+- **UserProfile.sol** - User profile management
+- **Message.sol** - Messaging system between users
+- **NFT.sol** - Base NFT contract for document tokens
 
-```shell
-$ forge build
+## Quick Start
+
+### Prerequisites
+
+- [Foundry](https://getfoundry.sh/) installed
+- Node.js and bun/npm/yarn
+- Testnet ETH for deployment
+- API keys for Alchemy and Etherscan
+
+### Setup
+
+1. **Install dependencies:**
+   ```bash
+   forge install
+   ```
+
+2. **Copy environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Configure your .env file:**
+   ```bash
+   # Add your private key (without 0x prefix)
+   PRIVATE_KEY=your_private_key_here
+   
+   # Add your Alchemy API key
+   ALCHEMY_API_KEY=your_alchemy_api_key_here
+   
+   # Add Etherscan API keys for verification
+   ETHERSCAN_API_KEY=your_etherscan_api_key_here
+   ```
+
+### Testing
+
+Run local tests:
+```bash
+forge test
 ```
 
-### Test
-
-```shell
-$ forge test
+Run tests with gas reporting:
+```bash
+forge test --gas-report
 ```
 
-### Format
+### Deployment
 
-```shell
-$ forge fmt
+Deploy to Sepolia testnet:
+```bash
+./deploy.sh sepolia
 ```
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
+Deploy to other networks:
+```bash
+./deploy.sh goerli
+./deploy.sh polygon_mumbai
+./deploy.sh arbitrum_sepolia
 ```
 
-### Anvil
+### On-Chain Testing
 
-```shell
-$ anvil
+After deployment, run on-chain tests:
+```bash
+./test-onchain.sh sepolia
 ```
 
-### Deploy
+**Note:** You'll need to update the contract addresses in the test script after deployment.
 
-```shell
-$ forge script script/Message.s.sol:MessageScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+## Contract Addresses
+
+After deployment, contract addresses will be saved in the `broadcast/` directory. Update your frontend configuration with these addresses.
+
+## Verification
+
+Contracts are automatically verified during deployment if you have the correct API keys configured.
+
+## Development
+
+### Adding New Contracts
+
+1. Create your contract in `src/`
+2. Add tests in `test/`
+3. Update the deployment script in `script/Deploy.s.sol`
+4. Update the on-chain test script if needed
+
+### Gas Optimization
+
+Run gas snapshots to track gas usage:
+```bash
+forge snapshot
 ```
 
-### Cast
+### Security
 
-```shell
-$ cast <subcommand>
+Run static analysis with Slither:
+```bash
+slither .
 ```
 
-### Help
+## Supported Networks
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- Ethereum Sepolia (testnet)
+- Ethereum Goerli (testnet)
+- Polygon Mumbai (testnet)
+- Arbitrum Sepolia (testnet)
 
-### Working with a local network
+## Troubleshooting
 
-Foundry comes with local network [anvil](https://book.getfoundry.sh/anvil/index.html) baked in, and allows us to deploy to our local network for quick testing locally.
+### Common Issues
 
-To start a local network run:
+1. **Deployment fails with "insufficient funds"**
+   - Ensure your wallet has enough testnet ETH
+   - Get testnet ETH from faucets
 
-```
-make anvil
-```
+2. **Verification fails**
+   - Check your Etherscan API key
+   - Ensure the contract was deployed successfully
 
-This will spin up a local blockchain with a determined private key, so you can use the same private key each time.
+3. **RPC errors**
+   - Check your Alchemy API key
+   - Try a different RPC endpoint
 
-Then, you can deploy to it with:
+### Getting Help
 
-```
-make deploy-anvil contract=<CONTRACT_NAME>
-```
-
-Similar to `deploy-sepolia` or `deploy-mumbai`
-
-### Working with other chains
-
-To add a chain, you'd just need to make a new entry in the `Makefile`, and replace `<YOUR_CHAIN>` with whatever your chain's information is.
-
-```
-deploy-<YOUR_CHAIN> :; @forge script script/${contract}.s.sol --rpc-url ${<YOUR_CHAIN>_RPC_URL}  --private-key ${PRIVATE_KEY} --broadcast -vvvv
-
-```
+- Check the [Foundry documentation](https://book.getfoundry.sh/)
+- Review contract tests for usage examples
+- Check deployment logs in the `broadcast/` directory

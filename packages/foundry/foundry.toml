@@ -2,5 +2,23 @@
 src = "src"
 out = "out"
 libs = ["lib"]
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
+
+# RPC URLs for different networks
+[rpc_endpoints]
+sepolia = "https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+goerli = "https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+polygon_mumbai = "https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+arbitrum_sepolia = "https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+
+# Etherscan API keys for verification
+[etherscan]
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+goerli = { key = "${ETHERSCAN_API_KEY}" }
+polygon_mumbai = { key = "${POLYGONSCAN_API_KEY}" }
+arbitrum_sepolia = { key = "${ARBISCAN_API_KEY}" }
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
