@@ -1,30 +1,35 @@
 'use client'
 
+import { wagmiAdapter, projectId, networks } from '@/config'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createAppKit } from '@reown/appkit/react'
-import { PropsWithChildren } from 'react'
-import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
-import { WALLETCONNECT_ADAPTER, WALLETCONNECT_PROJECT_ID } from '@/utils/web3'
-import { SITE_NAME, SITE_INFO, SITE_URL } from '@/utils/site'
-import { ETH_CHAINS } from '@/utils/network'
 import { mainnet } from '@reown/appkit/networks'
+import React, { type ReactNode } from 'react'
+import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
+import { SITE_NAME, SITE_INFO, SITE_URL } from '@/utils/site'
 
-interface Props extends PropsWithChildren {
-  cookies: string | null
+// Set up queryClient
+const queryClient = new QueryClient()
+
+if (!projectId) {
+  throw new Error('Project ID is not defined')
 }
 
+// Set up metadata
 const metadata = {
   name: SITE_NAME,
   description: SITE_INFO,
   url: SITE_URL,
-  icons: ['https://avatars.githubusercontent.com/u/25974464'],
+  icons: ['https://avatars.githubusercontent.com/u/25974464']
 }
 
+// Create the modal
 createAppKit({
-  adapters: [WALLETCONNECT_ADAPTER],
-  projectId: WALLETCONNECT_PROJECT_ID,
-  networks: [mainnet, ...ETH_CHAINS],
+  adapters: [wagmiAdapter],
+  projectId,
+  networks: [mainnet, ...networks.slice(1)],
   defaultNetwork: mainnet,
-  metadata: metadata,
+  metadata,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
     email: true,
@@ -32,14 +37,19 @@ createAppKit({
   },
 })
 
-export function Web3Provider(props: Props) {
-  const initialState = cookieToInitialState(WALLETCONNECT_ADAPTER.wagmiConfig as Config, props.cookies)
+interface Props {
+  children: ReactNode
+  cookies: string | null
+}
+
+export function Web3Provider({ children, cookies }: Props) {
+  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)
 
   return (
-    <>
-      <WagmiProvider config={WALLETCONNECT_ADAPTER.wagmiConfig as Config} initialState={initialState}>
-        {props.children}
-      </WagmiProvider>
-    </>
+    <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }

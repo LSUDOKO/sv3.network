@@ -7,7 +7,7 @@
     "language": "Solidity",
     "sources": {
       "contracts/Message.sol": {
-        "content": "// SPDX-License-Identifier: MIT\npragma solidity >=0.6.0 <0.9.0;\n\ncontract Message {\n  string public message = 'Quickly ship Web3 Apps!';\n\n  event SetMessage(address sender, string purpose);\n\n  constructor() {}\n\n  function setMessage(string memory _message) public payable {\n    message = _message;\n    \n    emit SetMessage(msg.sender, _message);\n  }\n}\n"
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity >=0.6.0 <0.9.0;\n\ncontract Message {\n  string public message = '📜 Sign, Store, and Verify; On-Chain.!';\n\n  event SetMessage(address sender, string purpose);\n\n  constructor() {}\n\n  function setMessage(string memory _message) public payable {\n    message = _message;\n    \n    emit SetMessage(msg.sender, _message);\n  }\n}\n"
       }
     },
     "settings": {
@@ -18,16 +18,8 @@
       },
       "outputSelection": {
         "*": {
-          "*": [
-            "abi",
-            "evm.bytecode",
-            "evm.deployedBytecode",
-            "evm.methodIdentifiers",
-            "metadata"
-          ],
-          "": [
-            "ast"
-          ]
+          "*": ["abi", "evm.bytecode", "evm.deployedBytecode", "evm.methodIdentifiers", "metadata"],
+          "": ["ast"]
         }
       }
     }
@@ -38,9 +30,7 @@
         "ast": {
           "absolutePath": "contracts/Message.sol",
           "exportedSymbols": {
-            "Message": [
-              31
-            ]
+            "Message": [31]
           },
           "id": 32,
           "license": "MIT",
@@ -48,15 +38,7 @@
           "nodes": [
             {
               "id": 1,
-              "literals": [
-                "solidity",
-                ">=",
-                "0.6",
-                ".0",
-                "<",
-                "0.9",
-                ".0"
-              ],
+              "literals": ["solidity", ">=", "0.6", ".0", "<", "0.9", ".0"],
               "nodeType": "PragmaDirective",
               "src": "32:31:0"
             },
@@ -68,9 +50,7 @@
               "contractKind": "contract",
               "fullyImplemented": true,
               "id": 31,
-              "linearizedBaseContracts": [
-                31
-              ],
+              "linearizedBaseContracts": [31],
               "name": "Message",
               "nameLocation": "74:7:0",
               "nodeType": "ContractDefinition",
@@ -113,9 +93,9 @@
                     "src": "110:25:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_stringliteral_7f4c11759204a910ce98c97eac75ae4e3f97b9db1fc6eddfc25d01d9c7fcb4a1",
-                      "typeString": "literal_string \"Quickly ship Web3 Apps!\""
+                      "typeString": "literal_string \"📜 Sign, Store, and Verify; On-Chain.!\""
                     },
-                    "value": "Quickly ship Web3 Apps!"
+                    "value": "📜 Sign, Store, and Verify; On-Chain.!"
                   },
                   "visibility": "public"
                 },
@@ -418,9 +398,7 @@
               "scope": 32,
               "src": "65:286:0",
               "usedErrors": [],
-              "usedEvents": [
-                10
-              ]
+              "usedEvents": [10]
             }
           ],
           "src": "32:320:0"

@@ -1,6 +1,6 @@
 'use client'
 
-import { Alert } from '@/components/Alert'
+import { NotificationItem } from '@/components/NotificationItem'
 import { useNotifications } from '@/context/Notifications'
 
 export default function NotificationsExample() {
@@ -46,13 +46,9 @@ export default function NotificationsExample() {
         <div className='flex flex-col gap-2'>
           {notifications.map((notification, index) => {
             return (
-              <Alert
+              <NotificationItem
                 key={index}
-                type={notification.type}
-                message={notification.message}
-                href={notification.href}
-                timestamp={notification.timestamp}
-                from={notification.from}
+                notification={notification}
               />
             )
           })}

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { expect } from "chai";
 import hre from "hardhat";
 import { keccak256, toBytes } from "viem";

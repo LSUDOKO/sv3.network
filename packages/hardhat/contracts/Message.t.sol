@@ -11,7 +11,7 @@ contract MessageTest {
     }
     
     function test_InitialMessage() public {
-        string memory expected = "Quickly ship Web3 Apps!";
+        string memory expected = "📜 Sign, Store, and Verify; On-Chain.!";
         string memory actual = messageContract.message();
         require(
             keccak256(abi.encodePacked(actual)) == keccak256(abi.encodePacked(expected)),

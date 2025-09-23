@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 contract Message {
-  string public message = 'Quickly ship Web3 Apps!';
+  string public message = '📜 Sign, Store, and Verify; On-Chain.!';
 
   event SetMessage(address sender, string purpose);
 

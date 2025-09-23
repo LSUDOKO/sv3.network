@@ -4,7 +4,7 @@
 
 - Node.js 18+
 - MetaMask or compatible wallet
-- Base Sepolia ETH (for testing)
+- BNB Smart Chain (for testing)
 - IPFS pinning service account (Pinata recommended)
 
 ## Quick Start Setup
@@ -44,11 +44,11 @@ NEXT_PUBLIC_DOCUMENT_RWA_CONTRACT=0x...
 # Compile contracts
 bun run compile
 
-# Deploy to Base Sepolia
-bun run deploy:base-sepolia
+# Deploy to BNB Smart Chain
+bun run deploy:bsc-testnet
 
-# Verify contracts on Etherscan
-bun run verify:base-sepolia
+# Verify contracts on BNB Smart Chain Explorer
+bun run verify:bsc-testnet
 ```
 
 ### 4. Start Development Environment

@@ -2,6 +2,11 @@
 
 import { useState } from 'react'
 import { mintDocument } from '@/lib/actions/contract-actions'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Progress } from './ui/progress'
+import { Badge } from './ui/badge'
 
 interface Document {
   id: string
@@ -35,9 +40,8 @@ export function Documents() {
     setUploadProgress(0)
 
     try {
-      // Simulate upload progress
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev >= 90) {
             clearInterval(progressInterval)
             return 90
@@ -46,7 +50,6 @@ export function Documents() {
         })
       }, 200)
 
-      // Upload file to IPFS
       const formData = new FormData()
       formData.append('file', selectedFile)
 
@@ -61,7 +64,6 @@ export function Documents() {
 
       const { ipfsHash } = await uploadResponse.json()
 
-      // Upload metadata
       const metadata = {
         name: selectedFile.name,
         description: `Document uploaded on ${new Date().toISOString()}`,
@@ -84,8 +86,10 @@ export function Documents() {
 
       const { metadataHash } = await metadataResponse.json()
 
-      // Mint document NFT
-      const signerAddresses = signers.split(',').map(s => s.trim()).filter(s => s)
+      const signerAddresses = signers
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s) => s)
       const result = await mintDocument(
         '0x0000000000000000000000000000000000000000', // to address
         metadataHash,
@@ -102,14 +106,14 @@ export function Documents() {
           uploadDate: new Date().toLocaleDateString(),
           status: 'pending',
           signers: signerAddresses,
-          signedBy: []
+          signedBy: [],
         }
 
         setDocuments([newDocument, ...documents])
         setSelectedFile(null)
         setSigners('')
         setUploadProgress(100)
-        
+
         setTimeout(() => {
           setIsUploading(false)
           setUploadProgress(0)
@@ -131,7 +135,7 @@ export function Documents() {
       uploadDate: '2024-01-15',
       status: 'signed',
       signers: ['0x1234...5678', '0x9876...4321'],
-      signedBy: ['0x1234...5678', '0x9876...4321']
+      signedBy: ['0x1234...5678', '0x9876...4321'],
     },
     {
       id: '2',
@@ -141,7 +145,7 @@ export function Documents() {
       uploadDate: '2024-01-14',
       status: 'pending',
       signers: ['0x1234...5678', '0x9876...4321', '0x5555...6666'],
-      signedBy: ['0x1234...5678']
+      signedBy: ['0x1234...5678'],
     },
     {
       id: '3',
@@ -151,22 +155,22 @@ export function Documents() {
       uploadDate: '2024-01-13',
       status: 'verified',
       signers: ['0x1234...5678', '0x9876...4321'],
-      signedBy: ['0x1234...5678', '0x9876...4321']
-    }
+      signedBy: ['0x1234...5678', '0x9876...4321'],
+    },
   ]
 
   const displayDocuments = documents.length > 0 ? documents : mockDocuments
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
     switch (status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'secondary'
       case 'signed':
-        return 'bg-blue-100 text-blue-800'
+        return 'default'
       case 'verified':
-        return 'bg-green-100 text-green-800'
+        return 'outline'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'default'
     }
   }
 
@@ -178,150 +182,126 @@ export function Documents() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Documents</h1>
-          <p className="text-gray-600 mt-2">Upload, manage, and track your documents</p>
-        </div>
+    <div className='space-y-8'>
+      <div>
+        <h1 className='text-3xl font-bold'>Documents</h1>
+        <p className='text-muted-foreground mt-2'>Upload, manage, and track your documents</p>
       </div>
 
-      {/* Upload Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Upload New Document</h2>
-        
-        <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Upload New Document</CardTitle>
+        </CardHeader>
+        <CardContent className='space-y-4'>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Document
-            </label>
-            <input
-              type="file"
-              onChange={handleFileSelect}
-              accept=".pdf,.doc,.docx,.txt"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            <label className='block text-sm font-medium text-muted-foreground mb-2'>Select Document</label>
+            <Input type='file' onChange={handleFileSelect} accept='.pdf,.doc,.docx,.txt' />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className='block text-sm font-medium text-muted-foreground mb-2'>
               Signers (comma-separated addresses)
             </label>
-            <input
-              type="text"
+            <Input
+              type='text'
               value={signers}
-              onChange={(e) => setSigners(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="0x1234..., 0x5678..."
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSigners(e.target.value)}
+              placeholder='0x1234..., 0x5678...'
             />
           </div>
 
           {isUploading && (
             <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
+              <div className='flex justify-between text-sm text-muted-foreground mb-1'>
                 <span>Uploading...</span>
                 <span>{uploadProgress}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
+              <Progress value={uploadProgress} />
             </div>
           )}
 
-          <button
-            onClick={handleUpload}
-            disabled={!selectedFile || isUploading}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
-          >
+          <Button onClick={handleUpload} disabled={!selectedFile || isUploading}>
             {isUploading ? 'Uploading...' : 'Upload Document'}
-          </button>
-        </div>
-      </div>
+          </Button>
+        </CardContent>
+      </Card>
 
-      {/* Documents List */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Your Documents</h2>
-        </div>
-
-        <div className="divide-y divide-gray-200">
-          {displayDocuments.map((doc) => (
-            <div key={doc.id} className="p-6 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">{getFileIcon(doc.type)}</span>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">{doc.name}</h3>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>{doc.size}</span>
-                      <span>•</span>
-                      <span>Uploaded {doc.uploadDate}</span>
-                      <span>•</span>
-                      <span>{doc.signedBy.length}/{doc.signers.length} signatures</span>
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Documents</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='divide-y divide-border'>
+            {displayDocuments.map((doc) => (
+              <div key={doc.id} className='py-6'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center space-x-4'>
+                    <div className='w-12 h-12 bg-secondary rounded-lg flex items-center justify-center'>
+                      <span className='text-2xl'>{getFileIcon(doc.type)}</span>
                     </div>
-                  </div>
-                </div>
 
-                <div className="flex items-center space-x-4">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}>
-                    {doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}
-                  </span>
-                  
-                  <div className="flex space-x-2">
-                    <button className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800">
-                      View
-                    </button>
-                    {doc.status === 'pending' && (
-                      <button className="px-3 py-1 text-sm text-green-600 hover:text-green-800">
-                        Sign
-                      </button>
-                    )}
-                    <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800">
-                      Download
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {doc.signers.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <div className="flex items-center space-x-4">
-                    <span className="text-sm font-medium text-gray-700">Signers:</span>
-                    <div className="flex space-x-2">
-                      {doc.signers.map((signer, index) => (
-                        <span
-                          key={index}
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                            doc.signedBy.includes(signer)
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}
-                        >
-                          {doc.signedBy.includes(signer) ? '✓' : '○'} {signer}
+                    <div>
+                      <h3 className='text-lg font-medium'>{doc.name}</h3>
+                      <div className='flex items-center space-x-4 text-sm text-muted-foreground'>
+                        <span>{doc.size}</span>
+                        <span>•</span>
+                        <span>Uploaded {doc.uploadDate}</span>
+                        <span>•</span>
+                        <span>
+                          {doc.signedBy.length}/{doc.signers.length} signatures
                         </span>
-                      ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='flex items-center space-x-4'>
+                    <Badge variant={getStatusVariant(doc.status)}>
+                      {doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}
+                    </Badge>
+
+                    <div className='flex space-x-2'>
+                      <Button variant='outline' size='sm'>
+                        View
+                      </Button>
+                      {doc.status === 'pending' && (
+                        <Button variant='default' size='sm'>
+                          Sign
+                        </Button>
+                      )}
+                      <Button variant='secondary' size='sm'>
+                        Download
+                      </Button>
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+
+                {doc.signers.length > 0 && (
+                  <div className='mt-4 pt-4 border-t border-border'>
+                    <div className='flex items-center space-x-4'>
+                      <span className='text-sm font-medium'>Signers:</span>
+                      <div className='flex flex-wrap gap-2'>
+                        {doc.signers.map((signer, index) => (
+                          <Badge key={index} variant={doc.signedBy.includes(signer) ? 'default' : 'secondary'}>
+                            {doc.signedBy.includes(signer) ? '✓' : '○'} {signer}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {displayDocuments.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">📄</span>
+        <div className='text-center py-12'>
+          <div className='w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4'>
+            <span className='text-2xl'>📄</span>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Documents</h3>
-          <p className="text-gray-600">Upload your first document to get started</p>
+          <h3 className='text-lg font-medium mb-2'>No Documents</h3>
+          <p className='text-muted-foreground'>Upload your first document to get started</p>
         </div>
       )}
     </div>

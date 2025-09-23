@@ -5,7 +5,7 @@
 **Status**: Draft
 **Input**: User description: "Got it  since you're targeting a hackathon deliverable, the plan needs to be **concrete, scoped, and achievable in a single day** while still showing the **vision of sv3.network** (Web3-native SignVault). Here's a detailed **plan of action**:
 
-# =€ Plan of Action for **sv3.network** (Hackathon Build)
+# =ï¿½ Plan of Action for **sv3.network** (Hackathon Build)
 
 ## 1. **High-Level Goals (Demo-Ready in 24h)**
 
@@ -15,7 +15,7 @@
   * Document handling as **RWA tokens** (NFTs or ERC-1155 for efficiency).
   * On-chain recording of e-signatures + metadata.
   * Basic on-chain representation of orgs/teams/users.
-* Working MVP demo on a testnet (Base, Sepolia, or Avalanche Fuji).
+* Working MVP demo on a testnet (BNB Smart Chain, Sepolia, or Avalanche Fuji).
 
 ## 2. **Architecture Overview**
 
@@ -38,19 +38,19 @@
 
 1. Spin up **hardhat or foundry** project.
 2. Set up **Next.js frontend** with wallet connect (wagmi + RainbowKit).
-3. Decide on chain (Base Sepolia for low fees + speed).
+3. Decide on chain (BNB Smart Chain Sepolia for low fees + speed).
 
 ### Phase 2: Smart Contracts (4h)
 
 1. **DocumentRegistry.sol**
 
-   * Function: createDocument(bytes32 docHash, string metadataURI) ’ mints an NFT (ERC-721/1155).
+   * Function: createDocument(bytes32 docHash, string metadataURI) ï¿½ mints an NFT (ERC-721/1155).
    * Store: docHash, metadataURI, owner, timestamp.
    * Event: DocumentCreated.
-   * Function: signDocument(uint256 docId) ’ emits DocumentSigned event with signer address.
+   * Function: signDocument(uint256 docId) ï¿½ emits DocumentSigned event with signer address.
 2. **Organization.sol**
 
-   * Mapping of orgId ’ member addresses.
+   * Mapping of orgId ï¿½ member addresses.
    * Basic CRUD for teams/orgs.
    * Event logging only (no complex logic).
 3. **Deploy contracts** to testnet.
@@ -58,17 +58,17 @@
 ### Phase 3: Frontend Integration (4-5h)
 
 1. **Wallet onboarding** (connect/disconnect, SIWE optional).
-2. **Org/Team creation** UI ’ calls Organization.sol.
+2. **Org/Team creation** UI ï¿½ calls Organization.sol.
 3. **Upload Document**:
 
-   * User uploads PDF ’ hash with SHA256 in browser.
+   * User uploads PDF ï¿½ hash with SHA256 in browser.
    * Upload file to IPFS (Pinata/web3.storage).
    * Call createDocument(docHash, metadataURI).
    * Show minted NFT ID.
 4. **Sign Document**:
 
    * Button: Sign on-chain.
-   * Calls signDocument(docId) ’ updates UI with signer list.
+   * Calls signDocument(docId) ï¿½ updates UI with signer list.
 
 ### Phase 4: Demo Polish (2-3h)
 
@@ -92,9 +92,9 @@
 1. User connects wallet.
 2. Creates/join org.
 3. Uploads & tokenizes document as RWA NFT.
-4. Signs document on-chain ’ blockchain proof.
+4. Signs document on-chain ï¿½ blockchain proof.
 5. Show NFT + signature record on testnet explorer.
-6. Pitch: From Web2 SignVault ’ Web3 sv3.network: bringing compliance, e-signatures, and document management on-chain.
+6. Pitch: From Web2 SignVault ï¿½ Web3 sv3.network: bringing compliance, e-signatures, and document management on-chain.
 
  By end of the day, you'll have:
 
@@ -110,37 +110,37 @@ Do you want me to also **draft the exact contract skeletons (Solidity)** + **fro
 ## Execution Flow (main)
 ```
 1. Parse user description from Input
-   ’ Input contains comprehensive feature description
+   ï¿½ Input contains comprehensive feature description
 2. Extract key concepts from description
-   ’ Hackathon MVP implementation plan
-   ’ Web3-native transformation of SignVault
-   ’ Blockchain-based document management
-   ’ Smart contracts for documents, organizations, users
-   ’ Wallet-based authentication
-   ’ IPFS document storage
-   ’ Multi-chain support
+   ï¿½ Hackathon MVP implementation plan
+   ï¿½ Web3-native transformation of SignVault
+   ï¿½ Blockchain-based document management
+   ï¿½ Smart contracts for documents, organizations, users
+   ï¿½ Wallet-based authentication
+   ï¿½ IPFS document storage
+   ï¿½ Multi-chain support
 3. For each unclear aspect:
-   ’ Time constraints (24 hours) are specified
-   ’ Specific testnet targets mentioned (Base, Sepolia, Avalanche Fuji)
-   ’ Clear MVP scope defined
+   ï¿½ Time constraints (24 hours) are specified
+   ï¿½ Specific testnet targets mentioned (BNB Smart Chain, Sepolia, Avalanche Fuji)
+   ï¿½ Clear MVP scope defined
 4. Fill User Scenarios & Testing section
-   ’ Multiple demo scenarios outlined
-   ’ Clear user journey defined
-   ’ Acceptance criteria established
+   ï¿½ Multiple demo scenarios outlined
+   ï¿½ Clear user journey defined
+   ï¿½ Acceptance criteria established
 5. Generate Functional Requirements
-   ’ Requirements are testable and measurable
-   ’ Scope is clearly bounded by time constraints
+   ï¿½ Requirements are testable and measurable
+   ï¿½ Scope is clearly bounded by time constraints
 6. Identify Key Entities (if data involved)
-   ’ Documents, Organizations, Users, Signatures identified
+   ï¿½ Documents, Organizations, Users, Signatures identified
 7. Run Review Checklist
-   ’ Requirements are clear and actionable
-   ’ Implementation details exist but are necessary for hackathon context
+   ï¿½ Requirements are clear and actionable
+   ï¿½ Implementation details exist but are necessary for hackathon context
 8. Return: SUCCESS (spec ready for planning)
 ```
 
 ---
 
-## ¡ Quick Guidelines
+## ï¿½ Quick Guidelines
 -  Focus on WHAT users need and WHY
 - L Avoid HOW to implement (no tech stack, APIs, code structure)
 - =e Written for business stakeholders, not developers
@@ -194,7 +194,7 @@ As a hackathon participant, I need to create a web3-native version of SignVault 
 - **FR-005**: System MUST provide on-chain digital signature functionality for documents
 - **FR-006**: System MUST display user wallet address and connected organization information
 - **FR-007**: System MUST show document signature status and signer information
-- **FR-008**: System MUST support multiple EVM-compatible chains (Base, Sepolia, Avalanche Fuji)
+- **FR-008**: System MUST support multiple EVM-compatible chains (BNB Smart Chain, Sepolia, Avalanche Fuji)
 - **FR-009**: System MUST provide a dashboard interface for managing documents and signatures
 - **FR-010**: System MUST complete all core functionality within 24-hour hackathon timeframe
 

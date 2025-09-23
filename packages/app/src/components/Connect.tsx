@@ -1,9 +1,7 @@
-import React from 'react'
+'use client'
+
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 export function Connect() {
-  return (
-    <div>
-      <w3m-button label='Connect' balance='hide' size='sm' />
-    </div>
-  )
+  return <ConnectButton />
 }

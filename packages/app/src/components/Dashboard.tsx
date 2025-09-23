@@ -9,6 +9,7 @@ import { UserProfile } from './UserProfile'
 import { Organizations } from './Organizations'
 import { Documents } from './Documents'
 import { Signatures } from './Signatures'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 
 export type DashboardView = 'overview' | 'profile' | 'organizations' | 'documents' | 'signatures'
 
@@ -18,20 +19,16 @@ export function Dashboard() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full space-y-8 p-8">
-          <div className="text-center">
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-              Welcome to SignVault
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Connect your wallet to access the decentralized document signing platform
-            </p>
-          </div>
-          <div className="mt-8">
+      <div className='min-h-screen flex items-center justify-center bg-background'>
+        <Card className='max-w-md w-full'>
+          <CardHeader className='text-center'>
+            <CardTitle className='text-3xl font-extrabold'>Welcome to SignVault</CardTitle>
+            <CardDescription>Connect your wallet to access the decentralized document signing platform</CardDescription>
+          </CardHeader>
+          <CardContent className='flex justify-center'>
             <Connect />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }
@@ -52,15 +49,10 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex">
-        <DashboardSidebar 
-          currentView={currentView} 
-          onViewChange={setCurrentView} 
-        />
-        <main className="flex-1 p-8">
-          {renderContent()}
-        </main>
+    <div className='min-h-screen bg-background'>
+      <div className='flex'>
+        <DashboardSidebar currentView={currentView} onViewChange={setCurrentView} />
+        <main className='flex-1 p-8'>{renderContent()}</main>
       </div>
     </div>
   )

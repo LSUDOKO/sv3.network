@@ -1,10 +1,8 @@
 'use server'
 
 import { writeContract, readContract } from '@wagmi/core'
-import { WALLETCONNECT_ADAPTER } from '@/utils/web3'
+import { config } from '@/config'
 import { UserProfileContractABI, OrganizationContractABI, DocumentRWAContractABI } from '@/abis'
-
-const config = WALLETCONNECT_ADAPTER.wagmiConfig
 
 // User Profile Actions
 export async function createUserProfile(

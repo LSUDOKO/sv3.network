@@ -2,25 +2,24 @@
 
 import React from 'react'
 import { useBlockNumber, useAccount } from 'wagmi'
-import { GetNetworkColor } from '@/utils/network'
 import { LinkComponent } from './LinkComponent'
+import { Badge } from './ui/badge'
 
 export function NetworkStatus() {
   const block = useBlockNumber({ watch: true })
   const { chain } = useAccount()
   const explorerUrl = chain?.blockExplorers?.default.url
   const networkName = chain?.name ?? 'Ethereum'
-  const color = GetNetworkColor(networkName, 'bgVariant')
 
   return (
-    <div className='flex items-center gap-2 p-4'>
-      <div className={`badge badge-info ${color}`}>{networkName}</div>
+    <div className='flex items-center gap-2'>
+      <Badge variant='outline'>{networkName}</Badge>
       {explorerUrl && (
-        <LinkComponent href={explorerUrl}>
-          <p className='text-xs'># {block.data?.toString()}</p>
+        <LinkComponent href={explorerUrl} className='text-xs text-muted-foreground hover:text-foreground'>
+          # {block.data?.toString()}
         </LinkComponent>
       )}
-      {!explorerUrl && <p className='text-xs'># {block.data?.toString()}</p>}
+      {!explorerUrl && <p className='text-xs text-muted-foreground'># {block.data?.toString()}</p>}
     </div>
   )
 }

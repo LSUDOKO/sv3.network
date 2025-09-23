@@ -38,9 +38,9 @@
   - Self-hosted IPFS node (complex setup, maintenance overhead)
 
 ### 5. Blockchain Networks
-**Decision**: Base Sepolia (primary), Avalanche Fuji (secondary)
+**Decision**: BNB Smart Chain (primary), Avalanche Fuji (secondary)
 - **Rationale**:
-  - Base Sepolia: Low fees, fast confirmations, Coinbase-backed, excellent for hackathon demos
+  - BNB Smart Chain: Low fees, fast confirmations, Coinbase-backed, excellent for hackathon demos
   - Avalanche Fuji: Fast finality, growing ecosystem, good backup option
 - **Alternatives considered**:
   - Ethereum Sepolia: Higher fees, slower
@@ -92,7 +92,7 @@
 - Optimistic UI updates for better perceived performance
 
 ### 3. Network Performance
-- Base Sepolia: ~0.1-1 second block times
+- BNB Smart Chain: ~0.1-1 second block times
 - IPFS: ~1-5 second upload times depending on file size
 - Contract interactions: ~2-5 seconds including confirmations
 
@@ -143,8 +143,8 @@
 2. Write tests using Hardhat + Waffle
 3. Deploy to local testnet
 4. Test frontend integration
-5. Deploy to Base Sepolia
-6. Verify contracts on Etherscan
+5. Deploy to BNB Smart Chain testnet
+6. Verify contracts on BNB Smart Chain Explorer
 
 ### 2. Frontend Development
 1. Set up wagmi + RainbowKit
@@ -166,7 +166,7 @@
 ### 1. Technical Risks
 - **Smart contract bugs**: Mitigated by thorough testing, simple contracts
 - **IPFS downtime**: Mitigated by multiple pinning services
-- **Network congestion**: Mitigated by using Base Sepolia (low congestion)
+- **Network congestion**: Mitigated by using BNB Smart Chain (low congestion)
 - **Wallet compatibility**: Mitigated by using RainbowKit (broad compatibility)
 
 ### 2. Timeline Risks

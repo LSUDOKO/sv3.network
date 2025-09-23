@@ -16,7 +16,7 @@ contract MessageTest is Test {
   }
 
   function testCorrectDefaultMessage() public {
-    assertEq(message.message(), 'Quickly ship Web3 Apps');
+    assertEq(message.message(), '📜 Sign, Store, and Verify; On-Chain.');
   }
 
   function testUpdateMessage() public {

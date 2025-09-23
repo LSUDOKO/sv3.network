@@ -1,6 +1,6 @@
 # sv3.network
 
-A Next.js + Ethereum starter kit with Viem, Wagmi, Web3Modal, SIWE, Tailwind, daisyUI and more to quickly ship production-ready Web3 Apps ⚡
+A Next.js + Ethereum starter kit with Viem, Wagmi, Web3Modal, SIWE, Tailwind, daisyUI and more to quickly ship production-ready Web3 Apps 📜
 
 ![sv3.network Readme Image](https://sv3.network/opengraph-image)
 

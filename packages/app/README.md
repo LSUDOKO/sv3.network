@@ -1,6 +1,6 @@
 # sv3.network
 
-A Next.js + Ethereum starter kit to quickly ship Web3 Apps ⚡
+A Next.js + Ethereum starter kit to 📜 Sign, Store, and Verify; On-Chain.
 
 ## Features ✅
 

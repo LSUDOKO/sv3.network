@@ -3,6 +3,7 @@ import { useBalance, useReadContract } from 'wagmi'
 import { useEffect } from 'react'
 import { formatBalance } from '@/utils/format'
 import { erc20Abi } from 'viem'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 
 interface TokenBalanceProps {
   readonly address: `0x${string}`
@@ -40,16 +41,18 @@ export const TokenBalance = ({ address, tokenAddress, toFixed, onBalanceChange, 
   }, [ETHBalance.data, tokenBalance.data, onBalanceChange, toFixed])
 
   if (!ETHBalance.data && !tokenBalance.data) return null
-  if (tokenAddress && tokenBalance.data) {
-    return (
-      <div className={`stat-value text-lg w-[150px] ${className}`}>
-        {formatBalance(tokenBalance.data ?? BigInt(0), toFixed)}
-      </div>
-    )
-  }
+
+  const balanceToShow = tokenAddress ? tokenBalance.data : ETHBalance.data?.value
+  const formattedBalance = formatBalance(balanceToShow ?? BigInt(0), toFixed)
+
   return (
-    <div className={`stat-value text-lg w-[150px] ${className}`}>
-      {formatBalance(ETHBalance.data?.value ?? BigInt(0), toFixed)}
-    </div>
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle className='text-base'>Token Balance</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className='text-lg font-semibold'>{formattedBalance}</div>
+      </CardContent>
+    </Card>
   )
 }

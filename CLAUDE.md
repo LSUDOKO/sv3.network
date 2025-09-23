@@ -12,7 +12,7 @@
 - **Frontend**: Next.js 15 + wagmi + viem + RainbowKit
 - **Storage**: IPFS (Pinata) for documents, blockchain for metadata/signatures
 - **Authentication**: Sign-In with Ethereum (SIWE)
-- **Networks**: Base Sepolia (primary), Avalanche Fuji (secondary)
+- **Networks**: BNB Smart Chain (primary), Avalanche Fuji (secondary)
 
 ### Smart Contract Architecture
 - **UserProfile.sol**: User identity, profile management, verification
@@ -118,7 +118,7 @@ specs/001-got-it-since/
 bun run dev              # Start development server
 bun run compile          # Compile contracts
 bun run test             # Run all tests
-bun run deploy:base-sepolia  # Deploy to testnet
+bun run deploy:bsc-testnet  # Deploy to BNB Smart Chain testnet
 ```
 
 ### Testing

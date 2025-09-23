@@ -6,24 +6,27 @@ import { LinkComponent } from './LinkComponent'
 
 export function Footer() {
   return (
-    <>
-      <div className='place-self-end'>
-        <NetworkStatus />
-      </div>
-
-      <footer className='sticky top-[100vh] footer flex justify-between items-center bg-neutral text-neutral-content p-4'>
-        <p>
-          {SITE_EMOJI} {SITE_INFO}
-        </p>
-        <div className='flex gap-4'>
-          <LinkComponent href={`https://github.com/${SOCIAL_GITHUB}`}>
-            <FaGithub />
-          </LinkComponent>
-          <LinkComponent href={`https://twitter.com/${SOCIAL_TWITTER}`}>
-            <FaXTwitter />
-          </LinkComponent>
+    <footer className='border-t'>
+      <div className='container mx-auto px-4'>
+        <div className='flex justify-between items-center h-16'>
+          <p className='text-muted-foreground'>
+            {SITE_EMOJI} {SITE_INFO}
+          </p>
+          <div className='flex items-center gap-4'>
+            <NetworkStatus />
+            <LinkComponent
+              href={`https://github.com/${SOCIAL_GITHUB}`}
+              className='text-muted-foreground hover:text-foreground'>
+              <FaGithub />
+            </LinkComponent>
+            <LinkComponent
+              href={`https://twitter.com/${SOCIAL_TWITTER}`}
+              className='text-muted-foreground hover:text-foreground'>
+              <FaXTwitter />
+            </LinkComponent>
+          </div>
         </div>
-      </footer>
-    </>
+      </div>
+    </footer>
   )
 }
