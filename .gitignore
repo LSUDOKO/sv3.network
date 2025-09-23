@@ -59,8 +59,8 @@ next-env.d.ts
 **/subgraph/node_modules
 **/subgraph/build
 
-# .claude/**
+.claude/**
 .specify/**
-# CLAUDE.md
-# specs/
+CLAUDE.md
+specs/
 

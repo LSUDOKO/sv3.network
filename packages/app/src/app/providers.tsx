@@ -1,29 +1,27 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { RainbowKitProvider, getDefaultConfig, } from '@rainbow-me/rainbowkit';
-import { WagmiProvider } from 'wagmi';
-import { mainnet, polygon, optimism, arbitrum, base, } from 'wagmi/chains';
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import '@rainbow-me/rainbowkit/styles.css'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { type ReactNode, useState } from 'react'
+import { type State, WagmiProvider } from 'wagmi'
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 
+import { getConfig } from '@/config'
 
-const config = getDefaultConfig({
-    appName: 'sv3.network',
-    projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
-    chains: [mainnet, polygon, optimism, arbitrum, base],
-    ssr: true, // If your dApp uses server side rendering (SSR)
-});
+type Props = {
+  children: ReactNode
+  initialState?: State | undefined
+}
 
-const queryClient = new QueryClient();
+export function Providers({ children, initialState }: Props) {
+  const [config] = useState(() => getConfig())
+  const [queryClient] = useState(() => new QueryClient())
 
-export function Providers({ children }: { children: React.ReactNode }) {
-    return (
-        <WagmiProvider config={config}>
-            <QueryClientProvider client={queryClient}>
-                <RainbowKitProvider>
-                    {children}
-                </RainbowKitProvider>
-            </QueryClientProvider>
-        </WagmiProvider>
-    );
+  return (
+    <WagmiProvider config={config} initialState={initialState}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>{children}</RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createOrganization } from '@/lib/actions/contract-actions'
+import { useCreateOrganizationMutation } from '@/hooks/useContractMutations'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -20,32 +20,32 @@ interface Organization {
 export function Organizations() {
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [isCreating, setIsCreating] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     description: '',
   })
 
+  const createOrganizationMutation = useCreateOrganizationMutation()
+
   const handleCreateOrganization = async () => {
-    setIsLoading(true)
     try {
-      const result = await createOrganization(formData.name, formData.description, '')
-      if (result.success) {
-        const newOrg: Organization = {
-          id: Date.now().toString(),
-          name: formData.name,
-          description: formData.description,
-          memberCount: 1,
-          isOwner: true,
-        }
-        setOrganizations([...organizations, newOrg])
-        setFormData({ name: '', description: '' })
-        setIsCreating(false)
+      await createOrganizationMutation.mutateAsync({
+        name: formData.name,
+        description: formData.description
+      })
+
+      const newOrg: Organization = {
+        id: Date.now().toString(),
+        name: formData.name,
+        description: formData.description,
+        memberCount: 1,
+        isOwner: true,
       }
+      setOrganizations([...organizations, newOrg])
+      setFormData({ name: '', description: '' })
+      setIsCreating(false)
     } catch (error) {
       console.error('Error creating organization:', error)
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -104,8 +104,8 @@ export function Organizations() {
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={handleCreateOrganization} disabled={isLoading || !formData.name}>
-                {isLoading ? 'Creating...' : 'Create Organization'}
+              <Button onClick={handleCreateOrganization} disabled={createOrganizationMutation.isPending || !formData.name}>
+                {createOrganizationMutation.isPending ? 'Creating...' : 'Create Organization'}
               </Button>
               <Button variant='outline' onClick={() => setIsCreating(false)}>
                 Cancel

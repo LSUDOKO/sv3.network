@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
-import { createUserProfile, getUserProfile, updateUserProfile } from '@/lib/actions/contract-actions'
+import { getUserProfile } from '@/lib/actions/contract-actions'
+import { useCreateUserProfileMutation, useUpdateUserProfileMutation } from '@/hooks/useContractMutations'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -37,6 +38,9 @@ export function UserProfile() {
     bio: '',
   })
 
+  const createProfileMutation = useCreateUserProfileMutation()
+  const updateProfileMutation = useUpdateUserProfileMutation()
+
   useEffect(() => {
     if (address) {
       loadProfile()
@@ -48,10 +52,9 @@ export function UserProfile() {
 
     setIsLoading(true)
     try {
-      const result = await getUserProfile(address)
-      if (result.success && result.profile) {
+      const contractProfile = await getUserProfile(address) as ContractProfile
+      if (contractProfile && contractProfile[0]) {
         // Convert contract profile to our ProfileData format
-        const contractProfile = result.profile as ContractProfile
         const profileData: ProfileData = {
           name: contractProfile[0] || '',
           email: contractProfile[1] || '',
@@ -72,20 +75,26 @@ export function UserProfile() {
   const handleSave = async () => {
     if (!address) return
 
-    setIsLoading(true)
     try {
       if (profile) {
-        await updateUserProfile(formData.name, formData.email, '')
+        // Update existing profile
+        await updateProfileMutation.mutateAsync({
+          field: 'name',
+          value: formData.name
+        })
       } else {
-        await createUserProfile(formData.name, formData.email, address, '')
+        // Create new profile
+        await createProfileMutation.mutateAsync({
+          username: formData.name,
+          email: formData.email
+        })
       }
 
       setProfile(formData)
       setIsEditing(false)
+      await loadProfile() // Reload profile data
     } catch (error) {
       console.error('Error saving profile:', error)
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -123,7 +132,7 @@ export function UserProfile() {
                 <span className='text-2xl'>👤</span>
               </div>
               <h3 className='text-lg font-medium mb-2'>No Profile Found</h3>
-              <p className='text-muted-foreground mb-6'>Create your profile to get started with SignVault</p>
+              <p className='text-muted-foreground mb-6'>Create your profile to get started with sv3.network</p>
               <Button onClick={() => setIsEditing(true)} size='lg'>
                 Create Profile
               </Button>
@@ -183,8 +192,11 @@ export function UserProfile() {
               </div>
 
               <div className='flex space-x-4'>
-                <Button onClick={handleSave} disabled={isLoading}>
-                  {isLoading ? 'Saving...' : 'Save Profile'}
+                <Button 
+                  onClick={handleSave} 
+                  disabled={createProfileMutation.isPending || updateProfileMutation.isPending}
+                >
+                  {(createProfileMutation.isPending || updateProfileMutation.isPending) ? 'Saving...' : 'Save Profile'}
                 </Button>
                 <Button onClick={handleCancel} variant='outline'>
                   Cancel

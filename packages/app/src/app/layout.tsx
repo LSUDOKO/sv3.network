@@ -1,8 +1,12 @@
 import type { Metadata, Viewport } from 'next'
 import { PropsWithChildren } from 'react'
+import { headers } from 'next/headers'
+import { cookieToInitialState } from 'wagmi'
 import { SITE_DESCRIPTION, SITE_EMOJI, SITE_INFO, SITE_NAME, SITE_URL, SOCIAL_TWITTER } from '@/utils/site'
 import { Layout } from '@/components/Layout'
 import { Providers } from './providers'
+import { getConfig } from '@/config'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -45,6 +49,8 @@ export const viewport: Viewport = {
 }
 
 export default async function RootLayout(props: PropsWithChildren) {
+  const initialState = cookieToInitialState(await getConfig(), (await headers()).get('cookie'))
+
   return (
     <html lang='en'>
       <head>
@@ -55,9 +61,10 @@ export default async function RootLayout(props: PropsWithChildren) {
       </head>
 
       <body>
-        <Providers>
+        <Providers initialState={initialState}>
           <Layout>{props.children}</Layout>
         </Providers>
+        <Toaster richColors />
       </body>
     </html>
   )

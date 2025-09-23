@@ -19,10 +19,10 @@ export function Dashboard() {
 
   if (!isConnected) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-background'>
+      <div className='py-24 md:py-48 flex items-center justify-center bg-background'>
         <Card className='max-w-md w-full'>
           <CardHeader className='text-center'>
-            <CardTitle className='text-3xl font-extrabold'>Welcome to SignVault</CardTitle>
+            <CardTitle className='text-3xl font-extrabold'>Welcome to sv3.network</CardTitle>
             <CardDescription>Connect your wallet to access the decentralized document signing platform</CardDescription>
           </CardHeader>
           <CardContent className='flex justify-center'>
@@ -49,7 +49,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className='py-0 bg-background'>
       <div className='flex'>
         <DashboardSidebar currentView={currentView} onViewChange={setCurrentView} />
         <main className='flex-1 p-8'>{renderContent()}</main>

@@ -4,7 +4,7 @@ pragma solidity >=0.6.0 <0.9.0;
 // import "hardhat/console.sol";
 
 contract Message {
-  string public message = '📜 Sign, Store, and Verify; On-Chain.';
+  string public message = unicode"📜 Sign, Store, and Verify; On-Chain.";
 
   event SetMessage(address sender, string purpose);
 

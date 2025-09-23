@@ -1,4 +1,4 @@
-export const SITE_EMOJI = '📜'
+export const SITE_EMOJI = '📝'
 export const SITE_NAME = 'sv3.network'
 export const SITE_INFO = 'Sign, Store, and Verify; On-Chain.'
 export const SITE_DESCRIPTION =

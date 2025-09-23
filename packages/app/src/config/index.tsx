@@ -1,6 +1,11 @@
-import { cookieStorage, createStorage } from '@wagmi/core'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { mainnet, arbitrum, base, polygon, optimism, sepolia } from '@reown/appkit/networks'
+import { 
+  createConfig, 
+  http, 
+  cookieStorage,
+  createStorage
+} from 'wagmi'
+import { mainnet, polygon, optimism, arbitrum, base, bsc } from 'wagmi/chains'
+import { injected, metaMask, walletConnect } from 'wagmi/connectors'
 
 // Get projectId from https://dashboard.reown.com
 export const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
@@ -9,16 +14,28 @@ if (!projectId) {
   throw new Error('Project ID is not defined')
 }
 
-export const networks = [mainnet, arbitrum, base, polygon, optimism, sepolia]
+export function getConfig() {
+  return createConfig({
+    chains: [mainnet, polygon, optimism, arbitrum, base, bsc],
+    connectors: [
+      injected(),
+      metaMask(),
+      walletConnect({ projectId: projectId! }),
+    ],
+    ssr: true,
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
+    transports: {
+      [mainnet.id]: http(),
+      [polygon.id]: http(),
+      [optimism.id]: http(),
+      [arbitrum.id]: http(),
+      [base.id]: http(),
+      [bsc.id]: http(),
+    },
+  })
+}
 
-//Set up the Wagmi Adapter (Config)
-export const wagmiAdapter = new WagmiAdapter({
-  storage: createStorage({
-    storage: cookieStorage
-  }),
-  ssr: true,
-  projectId,
-  networks
-})
-
-export const config = wagmiAdapter.wagmiConfig
+// Export config for server-side operations
+export const config = getConfig()

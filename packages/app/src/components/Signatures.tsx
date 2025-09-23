@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signDocument, verifyDocumentSignature } from '@/lib/actions/contract-actions'
+import { signDocument, isDocumentSigned } from '@/lib/actions/contract-actions'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
@@ -32,7 +32,7 @@ export function Signatures() {
   const handleSign = async (documentId: string) => {
     setIsLoading(true)
     try {
-      const signature = `0x${Math.random().toString(16).substr(2, 64)}`
+      const signature = `0x${Math.random().toString(16).substr(2, 64)}` as `0x${string}`
       const result = await signDocument(BigInt(documentId), signature)
       if (result.success) {
         console.log('Document signed successfully')
@@ -44,13 +44,11 @@ export function Signatures() {
     }
   }
 
-  const handleVerify = async (documentId: string, signer: string, signature: string) => {
+  const handleVerify = async (documentId: string, signer: string) => {
     setIsLoading(true)
     try {
-      const result = await verifyDocumentSignature(BigInt(documentId), signer, signature)
-      if (result.success) {
-        console.log('Signature verified:', result)
-      }
+      const isSigned = await isDocumentSigned(BigInt(documentId), signer as `0x${string}`)
+      console.log('Signature verified:', isSigned)
     } catch (error) {
       console.error('Error verifying signature:', error)
     } finally {
@@ -251,7 +249,7 @@ export function Signatures() {
                           View Document
                         </Button>
                         <Button
-                          onClick={() => handleVerify(signature.documentId, '0x1234...5678', signature.signatureHash)}
+                          onClick={() => handleVerify(signature.documentId, '0x1234...5678')}
                           disabled={isLoading}
                           variant='secondary'
                           size='sm'>

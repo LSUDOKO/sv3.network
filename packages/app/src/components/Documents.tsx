@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { mintDocument } from '@/lib/actions/contract-actions'
+import { useCreateDocumentMutation } from '@/hooks/useContractMutations'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -25,6 +25,8 @@ export function Documents() {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [signers, setSigners] = useState<string>('')
+
+  const createDocumentMutation = useCreateDocumentMutation()
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -90,35 +92,34 @@ export function Documents() {
         .split(',')
         .map((s) => s.trim())
         .filter((s) => s)
-      const result = await mintDocument(
-        '0x0000000000000000000000000000000000000000', // to address
-        metadataHash,
-        signerAddresses,
-        BigInt(0) // orgId
-      )
+      
+      await createDocumentMutation.mutateAsync({
+        organizationId: BigInt(0), // organizationId
+        title: selectedFile.name, // title
+        contentHash: 'content-hash-placeholder', // contentHash
+        metadataHash: metadataHash // metadataHash
+      })
 
-      if (result.success) {
-        const newDocument: Document = {
-          id: Date.now().toString(),
-          name: selectedFile.name,
-          type: selectedFile.type,
-          size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
-          uploadDate: new Date().toLocaleDateString(),
-          status: 'pending',
-          signers: signerAddresses,
-          signedBy: [],
-        }
-
-        setDocuments([newDocument, ...documents])
-        setSelectedFile(null)
-        setSigners('')
-        setUploadProgress(100)
-
-        setTimeout(() => {
-          setIsUploading(false)
-          setUploadProgress(0)
-        }, 1000)
+      const newDocument: Document = {
+        id: Date.now().toString(),
+        name: selectedFile.name,
+        type: selectedFile.type,
+        size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
+        uploadDate: new Date().toLocaleDateString(),
+        status: 'pending',
+        signers: signerAddresses,
+        signedBy: [],
       }
+
+      setDocuments([newDocument, ...documents])
+      setSelectedFile(null)
+      setSigners('')
+      setUploadProgress(100)
+
+      setTimeout(() => {
+        setIsUploading(false)
+        setUploadProgress(0)
+      }, 1000)
     } catch (error) {
       console.error('Error uploading document:', error)
       setIsUploading(false)
@@ -210,7 +211,7 @@ export function Documents() {
             />
           </div>
 
-          {isUploading && (
+          {(isUploading || createDocumentMutation.isPending) && (
             <div>
               <div className='flex justify-between text-sm text-muted-foreground mb-1'>
                 <span>Uploading...</span>
@@ -220,8 +221,8 @@ export function Documents() {
             </div>
           )}
 
-          <Button onClick={handleUpload} disabled={!selectedFile || isUploading}>
-            {isUploading ? 'Uploading...' : 'Upload Document'}
+          <Button onClick={handleUpload} disabled={!selectedFile || isUploading || createDocumentMutation.isPending}>
+            {(isUploading || createDocumentMutation.isPending) ? 'Uploading...' : 'Upload Document'}
           </Button>
         </CardContent>
       </Card>
