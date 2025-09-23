@@ -1,4 +1,4 @@
-'use server'
+"use server"
 
 import { createPublicClient, http } from 'viem'
 import { bsc } from 'viem/chains'
@@ -30,6 +30,16 @@ const publicClient = createPublicClient({
 // }
 
 export async function getUserProfile(userAddress: string) {
+  // Standardized empty profile tuple for non-existent users
+  const emptyProfile = [
+    '0x0000000000000000000000000000000000000000', // walletAddress
+    '', // username
+    '', // email
+    '', // linkedinProfile
+    false, // verified
+    0n, // createdAt
+  ] as const
+
   try {
     const profile = await publicClient.readContract({
       abi: userProfileAbi,
@@ -39,8 +49,30 @@ export async function getUserProfile(userAddress: string) {
     })
     return profile
   } catch (error) {
+    // Gracefully handle any revert from getProfile (e.g., profile not found) and return an empty profile structure
+    // Viem throws on contract reverts during readContract. If no reason string is available, the message can be "execution reverted: 0x".
+    // We treat any revert/execution error here as "profile does not exist" and return an empty profile instead of propagating a 500.
+    if (error && typeof error === 'object') {
+      const err = error as Record<string, unknown>
+      const message = (err.message as string) || ''
+      const shortMessage = (err.shortMessage as string) || ''
+
+      // Known messages for revert cases we want to swallow
+      const indicative = [
+        'Profile not found',
+        'Profile does not exist',
+        'execution reverted',
+        'ContractFunctionRevertedError',
+        'ContractFunctionExecutionError',
+      ]
+      if (indicative.some((s) => message.includes(s) || shortMessage.includes(s))) {
+        return emptyProfile
+      }
+    }
+
     console.error('Get user profile error:', error)
-    throw error
+    // As a final fallback (unexpected error shapes), return empty profile to avoid breaking the UI.
+    return emptyProfile
   }
 }
 

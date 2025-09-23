@@ -24,7 +24,7 @@ export default defineConfig({
         'DocumentRWA.sol/**',
         'Organization.sol/**', 
         'UserProfile.sol/**',
-        'Message.sol/**',
+        // 'Message.sol/**', // removed to avoid incorrect contract linking/decoding
         'NFT.sol/**',
       ],
       deployments: {
@@ -38,10 +38,10 @@ export default defineConfig({
         UserProfile: {
           56: '0x5d6e20e003c431bd36e293c6898e6b0356737f26', // BNB Smart Chain
         },
-        Message: {
-          56: '0x0dcc9cf9f1292f7a09b5b37047acde2e3d873b0d', // BNB Smart Chain
-          11155111: '0xcc5a0d6268d70811edad77799f2168afe6382e89', // Sepolia (legacy)
-        },
+        // Message: {
+        //   56: '0x0dcc9cf9f1292f7a09b5b37047acde2e3d873b0d', // removed
+        //   11155111: '0xcc5a0d6268d70811edad77799f2168afe6382e89', // removed
+        // },
         NFT: {
           56: '0xb69929057eb74181ac89da3012e25a705f6b1fdc', // BNB Smart Chain
         },

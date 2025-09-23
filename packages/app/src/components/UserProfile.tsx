@@ -12,6 +12,7 @@ import { Badge } from './ui/badge'
 
 interface ProfileData {
   name: string
+  username: string
   email: string
   organization: string
   role: string
@@ -19,10 +20,12 @@ interface ProfileData {
 }
 
 interface ContractProfile {
-  0: string // name
-  1: string // email
-  2: string // publicKey
-  3: string // metadataUri
+  0: string // walletAddress
+  1: string // username
+  2: string // email
+  3: string // linkedinProfile
+  4: boolean // verified
+  5: bigint // createdAt
 }
 
 export function UserProfile() {
@@ -32,6 +35,7 @@ export function UserProfile() {
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState<ProfileData>({
     name: '',
+    username: '',
     email: '',
     organization: '',
     role: '',
@@ -53,20 +57,27 @@ export function UserProfile() {
     setIsLoading(true)
     try {
       const contractProfile = await getUserProfile(address) as ContractProfile
-      if (contractProfile && contractProfile[0]) {
+      // If we get a valid response with wallet address (index 0), profile exists
+      if (contractProfile && contractProfile[0] && contractProfile[0] !== '0x0000000000000000000000000000000000000000') {
         // Convert contract profile to our ProfileData format
         const profileData: ProfileData = {
-          name: contractProfile[0] || '',
-          email: contractProfile[1] || '',
-          organization: formData.organization, // Not stored in contract
-          role: formData.role, // Not stored in contract
-          bio: formData.bio, // Not stored in contract
+          name: contractProfile[1] || '', // historically used username as display name
+          username: contractProfile[1] || '', // username from contract
+          email: contractProfile[2] || '', // email from contract
+          organization: '', // Not stored in contract
+          role: '', // Not stored in contract
+          bio: '', // Not stored in contract
         }
         setProfile(profileData)
         setFormData(profileData)
+      } else {
+        // Profile doesn't exist
+        setProfile(null)
       }
     } catch (error) {
       console.error('Error loading profile:', error)
+      // Profile doesn't exist, which is expected for new users
+      setProfile(null)
     } finally {
       setIsLoading(false)
     }
@@ -77,15 +88,23 @@ export function UserProfile() {
 
     try {
       if (profile) {
-        // Update existing profile
-        await updateProfileMutation.mutateAsync({
-          field: 'name',
-          value: formData.name
-        })
+        // Update existing profile - update both username and email
+        if (formData.username !== profile.username) {
+          await updateProfileMutation.mutateAsync({
+            field: 'username',
+            value: formData.username
+          })
+        }
+        if (formData.email !== profile.email) {
+          await updateProfileMutation.mutateAsync({
+            field: 'email',
+            value: formData.email
+          })
+        }
       } else {
         // Create new profile
         await createProfileMutation.mutateAsync({
-          username: formData.name,
+          username: formData.username,
           email: formData.email
         })
       }
@@ -147,6 +166,16 @@ export function UserProfile() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder='Enter your full name'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-foreground mb-2'>Username</label>
+                  <Input
+                    type='text'
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    placeholder='Choose a unique username'
                   />
                 </div>
 

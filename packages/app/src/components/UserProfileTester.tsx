@@ -97,12 +97,12 @@ export function UserProfileTester() {
         
         if (Array.isArray(contractProfile)) {
           profileData = {
-            walletAddress: contractProfile[0] || '',
-            username: contractProfile[1] || '',
-            email: contractProfile[2] || '',
-            linkedinProfile: contractProfile[3] || '',
-            verified: contractProfile[4] || false,
-            createdAt: contractProfile[5] || BigInt(0),
+            walletAddress: String(contractProfile[0]) || '',
+            username: String(contractProfile[1]) || '',
+            email: String(contractProfile[2]) || '',
+            linkedinProfile: String(contractProfile[3]) || '',
+            verified: Boolean(contractProfile[4]),
+            createdAt: BigInt(contractProfile[5]),
           }
         } else {
           profileData = contractProfile as unknown as ContractProfile

@@ -12,15 +12,17 @@ import {
 
 // User Profile Client Actions
 export function useCreateUserProfile() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  const { writeContractAsync, data: hash, isPending, error } = useWriteContract()
 
   const createUserProfile = async (username: string, email: string) => {
-    return writeContract({
+    const txHash = await writeContractAsync({
       abi: userProfileAbi,
       address: userProfileAddress[56], // BNB Smart Chain
+      chainId: 56,
       functionName: 'createProfile',
       args: [username, email],
     })
+    return txHash
   }
 
   return {
@@ -32,15 +34,17 @@ export function useCreateUserProfile() {
 }
 
 export function useUpdateUserProfile() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  const { writeContractAsync, data: hash, isPending, error } = useWriteContract()
 
   const updateUserProfile = async (field: string, value: string) => {
-    return writeContract({
+    const txHash = await writeContractAsync({
       abi: userProfileAbi,
       address: userProfileAddress[56], // BNB Smart Chain
+      chainId: 56,
       functionName: 'updateProfile',
       args: [field, value],
     })
+    return txHash
   }
 
   return {
@@ -53,15 +57,17 @@ export function useUpdateUserProfile() {
 
 // Organization Client Actions
 export function useCreateOrganization() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  const { writeContractAsync, data: hash, isPending, error } = useWriteContract()
 
   const createOrganization = async (name: string, description: string) => {
-    return writeContract({
+    const txHash = await writeContractAsync({
       abi: organizationAbi,
       address: organizationAddress[56], // BNB Smart Chain
+      chainId: 56,
       functionName: 'createOrganization',
       args: [name, description],
     })
+    return txHash
   }
 
   return {
@@ -73,15 +79,17 @@ export function useCreateOrganization() {
 }
 
 export function useAddMemberToOrganization() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  const { writeContractAsync, data: hash, isPending, error } = useWriteContract()
 
   const addMemberToOrganization = async (orgId: bigint, memberAddress: string, role: bigint) => {
-    return writeContract({
+    const txHash = await writeContractAsync({
       abi: organizationAbi,
       address: organizationAddress[56], // BNB Smart Chain
+      chainId: 56,
       functionName: 'addMember',
       args: [orgId, memberAddress as `0x${string}`, role],
     })
+    return txHash
   }
 
   return {
@@ -94,15 +102,17 @@ export function useAddMemberToOrganization() {
 
 // Document Client Actions
 export function useCreateDocument() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  const { writeContractAsync, data: hash, isPending, error } = useWriteContract()
 
   const createDocument = async (organizationId: bigint, title: string, contentHash: string, metadataHash: string) => {
-    return writeContract({
+    const txHash = await writeContractAsync({
       abi: documentRwaAbi,
       address: documentRwaAddress[56], // BNB Smart Chain
+      chainId: 56,
       functionName: 'createDocument',
       args: [organizationId, title, contentHash, metadataHash],
     })
+    return txHash
   }
 
   return {
@@ -114,15 +124,17 @@ export function useCreateDocument() {
 }
 
 export function useSignDocument() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  const { writeContractAsync, data: hash, isPending, error } = useWriteContract()
 
   const signDocument = async (docId: bigint, signatureData: `0x${string}`) => {
-    return writeContract({
+    const txHash = await writeContractAsync({
       abi: documentRwaAbi,
       address: documentRwaAddress[56], // BNB Smart Chain
+      chainId: 56,
       functionName: 'signDocument',
       args: [docId, signatureData],
     })
+    return txHash
   }
 
   return {
