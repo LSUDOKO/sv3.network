@@ -49,7 +49,8 @@ export const viewport: Viewport = {
 }
 
 export default async function RootLayout(props: PropsWithChildren) {
-  const initialState = cookieToInitialState(await getConfig(), (await headers()).get('cookie'))
+  const headersList = await headers()
+  const initialState = cookieToInitialState(getConfig(), headersList.get('cookie'))
 
   return (
     <html lang='en'>

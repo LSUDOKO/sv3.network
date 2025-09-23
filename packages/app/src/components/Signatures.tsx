@@ -1,11 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { signDocument, isDocumentSigned } from '@/lib/actions/contract-actions'
+import { isDocumentSigned } from '@/lib/actions/contract-actions'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+import { useSignDocument } from '@/lib/client-contract-actions'
+import { toast } from 'sonner'
 
 interface SignatureRequest {
   id: string
@@ -28,17 +30,17 @@ interface CompletedSignature {
 
 export function Signatures() {
   const [isLoading, setIsLoading] = useState(false)
+  const { signDocument, isPending: isSignLoading } = useSignDocument()
 
   const handleSign = async (documentId: string) => {
     setIsLoading(true)
     try {
       const signature = `0x${Math.random().toString(16).substr(2, 64)}` as `0x${string}`
-      const result = await signDocument(BigInt(documentId), signature)
-      if (result.success) {
-        console.log('Document signed successfully')
-      }
+      await signDocument(BigInt(documentId), signature)
+      toast.success('Document signed successfully')
     } catch (error) {
       console.error('Error signing document:', error)
+      toast.error('Error signing document')
     } finally {
       setIsLoading(false)
     }
@@ -185,8 +187,8 @@ export function Signatures() {
                           <Button variant='outline' size='sm'>
                             Preview
                           </Button>
-                          <Button onClick={() => handleSign(request.documentId)} disabled={isLoading} size='sm'>
-                            {isLoading ? 'Signing...' : 'Sign Document'}
+                          <Button onClick={() => handleSign(request.documentId)} disabled={isSignLoading} size='sm'>
+                            {isSignLoading ? 'Signing...' : 'Sign Document'}
                           </Button>
                         </div>
                       )}

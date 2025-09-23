@@ -2,12 +2,6 @@
 
 import { createPublicClient, http } from 'viem'
 import { bsc } from 'viem/chains'
-
-// Create viem clients for server-side contract interactions
-const publicClient = createPublicClient({
-  chain: bsc,
-  transport: http(),
-})
 import {
   documentRwaAbi,
   organizationAbi,
@@ -16,6 +10,13 @@ import {
   organizationAddress,
   documentRwaAddress,
 } from '../../abis'
+
+// Create viem clients for server-side contract interactions
+const publicClient = createPublicClient({
+  chain: bsc,
+  transport: http(),
+})
+
 
 // User Profile Actions
 // export async function createUserProfile(username: string, email: string) {
