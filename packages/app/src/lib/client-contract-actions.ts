@@ -17,8 +17,8 @@ export function useCreateUserProfile() {
   const createUserProfile = async (username: string, email: string) => {
     const txHash = await writeContractAsync({
       abi: userProfileAbi,
-      address: userProfileAddress[56], // BNB Smart Chain
-      chainId: 56,
+      address: userProfileAddress[97], // BNB Smart Chain
+      chainId: 97,
       functionName: 'createProfile',
       args: [username, email],
     })
@@ -39,8 +39,8 @@ export function useUpdateUserProfile() {
   const updateUserProfile = async (field: string, value: string) => {
     const txHash = await writeContractAsync({
       abi: userProfileAbi,
-      address: userProfileAddress[56], // BNB Smart Chain
-      chainId: 56,
+      address: userProfileAddress[97], // BNB Smart Chain
+      chainId: 97,
       functionName: 'updateProfile',
       args: [field, value],
     })
@@ -62,8 +62,8 @@ export function useCreateOrganization() {
   const createOrganization = async (name: string, description: string) => {
     const txHash = await writeContractAsync({
       abi: organizationAbi,
-      address: organizationAddress[56], // BNB Smart Chain
-      chainId: 56,
+      address: organizationAddress[97], // BNB Smart Chain
+      chainId: 97,
       functionName: 'createOrganization',
       args: [name, description],
     })
@@ -84,8 +84,8 @@ export function useAddMemberToOrganization() {
   const addMemberToOrganization = async (orgId: bigint, memberAddress: string, role: bigint) => {
     const txHash = await writeContractAsync({
       abi: organizationAbi,
-      address: organizationAddress[56], // BNB Smart Chain
-      chainId: 56,
+      address: organizationAddress[97], // BNB Smart Chain
+      chainId: 97,
       functionName: 'addMember',
       args: [orgId, memberAddress as `0x${string}`, role],
     })
@@ -107,8 +107,8 @@ export function useCreateDocument() {
   const createDocument = async (organizationId: bigint, title: string, contentHash: string, metadataHash: string) => {
     const txHash = await writeContractAsync({
       abi: documentRwaAbi,
-      address: documentRwaAddress[56], // BNB Smart Chain
-      chainId: 56,
+      address: documentRwaAddress[97], // BNB Smart Chain
+      chainId: 97,
       functionName: 'createDocument',
       args: [organizationId, title, contentHash, metadataHash],
     })
@@ -129,8 +129,8 @@ export function useSignDocument() {
   const signDocument = async (docId: bigint, signatureData: `0x${string}`) => {
     const txHash = await writeContractAsync({
       abi: documentRwaAbi,
-      address: documentRwaAddress[56], // BNB Smart Chain
-      chainId: 56,
+      address: documentRwaAddress[97], // BNB Smart Chain
+      chainId: 97,
       functionName: 'signDocument',
       args: [docId, signatureData],
     })

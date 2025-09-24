@@ -42,13 +42,17 @@ case $NETWORK in
         RPC_URL="https://api.avax.network/ext/bc/C/rpc"
         CHAIN_ID=43114
         ;;
+    bnb-testnet)
+        RPC_URL="https://data-seed-prebsc-1-s3.bnbchain.org:8545"
+        CHAIN_ID=97
+        ;;
     bnb)
         RPC_URL="https://bsc-dataseed1.binance.org/"
         CHAIN_ID=56
         ;;
     *)
         echo "❌ Unsupported network: $NETWORK"
-        echo "Supported networks: sepolia, goerli, mumbai, arbitrum-sepolia, avax, bnb"
+        echo "Supported networks: sepolia, goerli, mumbai, arbitrum-sepolia, avax, bnb-testnet, bnb"
         exit 1
         ;;
 esac
@@ -88,8 +92,8 @@ fi
 # Run on-chain tests
 echo "🔨 Running on-chain tests..."
 /Users/harjjotsinghh/.foundry/bin/forge script script/OnChainTest.s.sol:OnChainTestScript \
-    --rpc-url $RPC_URL \
-    --private-key $PRIVATE_KEY \
+    --rpc-url "$RPC_URL" \
+    --private-key "$PRIVATE_KEY" \
     --broadcast \
     -vvvv
 

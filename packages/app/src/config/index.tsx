@@ -4,7 +4,7 @@ import {
   cookieStorage,
   createStorage
 } from 'wagmi'
-import { mainnet, polygon, optimism, arbitrum, base, bsc } from 'wagmi/chains'
+import { mainnet, polygon, optimism, arbitrum, base, bsc, bscTestnet } from 'wagmi/chains'
 import { injected, metaMask, walletConnect } from 'wagmi/connectors'
 
 // Get projectId from https://dashboard.reown.com
@@ -16,12 +16,8 @@ if (!projectId) {
 
 export function getConfig() {
   return createConfig({
-    chains: [mainnet, polygon, optimism, arbitrum, base, bsc],
-    connectors: [
-      injected(),
-      metaMask(),
-      walletConnect({ projectId: projectId! }),
-    ],
+    chains: [mainnet, polygon, optimism, arbitrum, base, bsc, bscTestnet],
+    connectors: [injected(), metaMask(), walletConnect({ projectId: projectId! })],
     ssr: true,
     storage: createStorage({
       storage: cookieStorage,
@@ -33,6 +29,7 @@ export function getConfig() {
       [arbitrum.id]: http(),
       [base.id]: http(),
       [bsc.id]: http(),
+      [bscTestnet.id]: http(),
     },
   })
 }

@@ -43,7 +43,7 @@ export async function getUserProfile(userAddress: string) {
   try {
     const profile = await publicClient.readContract({
       abi: userProfileAbi,
-      address: userProfileAddress[56], // BNB Smart Chain
+      address: userProfileAddress[97], // BNB Smart Chain
       functionName: 'getProfile',
       args: [userAddress as `0x${string}`],
     })
@@ -100,7 +100,7 @@ export async function getOrganization(orgId: bigint) {
   try {
     const organization = await publicClient.readContract({
       abi: organizationAbi,
-      address: organizationAddress[56], // BNB Smart Chain
+      address: organizationAddress[97], // BNB Smart Chain
       functionName: 'getOrganization',
       args: [orgId],
     })
@@ -145,7 +145,7 @@ export async function getDocument(documentId: bigint) {
   try {
     const document = await publicClient.readContract({
       abi: documentRwaAbi,
-      address: documentRwaAddress[56], // BNB Smart Chain
+      address: documentRwaAddress[97], // BNB Smart Chain
       functionName: 'getDocument',
       args: [documentId],
     })
@@ -160,7 +160,7 @@ export async function getDocumentSigners(docId: bigint) {
   try {
     const signers = await publicClient.readContract({
       abi: documentRwaAbi,
-      address: documentRwaAddress[56], // BNB Smart Chain
+      address: documentRwaAddress[97], // BNB Smart Chain
       functionName: 'getDocumentSigners',
       args: [docId],
     })
@@ -175,7 +175,7 @@ export async function isDocumentSigned(docId: bigint, signer: string) {
   try {
     const isSigned = await publicClient.readContract({
       abi: documentRwaAbi,
-      address: documentRwaAddress[56], // BNB Smart Chain
+      address: documentRwaAddress[97], // BNB Smart Chain
       functionName: 'isSigned',
       args: [docId, signer as `0x${string}`],
     })

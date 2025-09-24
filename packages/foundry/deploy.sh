@@ -53,13 +53,17 @@ case $NETWORK in
         RPC_URL="https://api.avax.network/ext/bc/C/rpc"
         CHAIN_ID=43114
         ;;
+    bnb-testnet)
+        RPC_URL="https://data-seed-prebsc-1-s3.bnbchain.org:8545"
+        CHAIN_ID=97
+        ;;
     bnb)
         RPC_URL="https://bsc-dataseed1.binance.org/"
         CHAIN_ID=56
         ;;
     *)
         echo "❌ Unsupported network: $NETWORK"
-        echo "Supported networks: sepolia, goerli, mumbai, arbitrum-sepolia, avax, bnb"
+        echo "Supported networks: sepolia, goerli, mumbai, arbitrum-sepolia, avax, bnb-testnet, bnb"
         exit 1
         ;;
 esac
@@ -67,16 +71,18 @@ esac
 echo "📋 Network: $NETWORK"
 echo "📋 Chain ID: $CHAIN_ID"
 echo "📋 RPC URL: $RPC_URL"
-echo "📋 Deployer: $(/Users/harjjotsinghh/.foundry/bin/cast wallet address $PRIVATE_KEY)"
+echo "📋 Deployer: $(/Users/harjjotsinghh/.foundry/bin/cast wallet address "$PRIVATE_KEY")"
+
+
 
 # Deploy contracts
 echo "🔨 Deploying contracts..."
 /Users/harjjotsinghh/.foundry/bin/forge script script/Deploy.s.sol:DeployScript \
-    --rpc-url $RPC_URL \
-    --private-key $PRIVATE_KEY \
+    --rpc-url "$RPC_URL" \
+    --private-key "$PRIVATE_KEY" \
     --broadcast \
     --verify \
-    --etherscan-api-key $ETHERSCAN_API_KEY \
+    --etherscan-api-key "$ETHERSCAN_API_KEY" \
     -vvvv
 
 echo "✅ Deployment completed!"

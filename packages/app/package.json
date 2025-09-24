@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --fix",
-    "wagmi": "wagmi generate"
+    "wagmi": "wagmi generate",
+    "db:migrate": "bun run src/db/migrate.ts",
+    "db:migrate:up": "bun run src/db/migrate.ts up",
+    "db:migrate:down": "bun run src/db/migrate.ts down",
+    "db:migrate:status": "bun run src/db/migrate.ts status",
+    "db:migrate:reset": "bun run src/db/migrate.ts reset",
+    "db:migrate:fresh": "bun run src/db/migrate.ts fresh"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -51,9 +57,11 @@
     "dayjs": "^1.11.13",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
+    "kysely": "^0.28.7",
     "lucide-react": "^0.544.0",
     "next": "^15.3.1",
     "next-themes": "^0.4.6",
+    "pg": "^8.16.3",
     "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-day-picker": "^9.11.0",
@@ -78,12 +86,14 @@
     "@tsconfig/next": "^2.0.3",
     "@types/minimatch": "^6.0.0",
     "@types/node": "^20",
+    "@types/pg": "^8.15.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@wagmi/cli": "^2.1.16",
     "daisyui": "^5",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }

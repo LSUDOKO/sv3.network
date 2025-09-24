@@ -22,29 +22,32 @@ export default defineConfig({
       artifacts: '../foundry/out',
       include: [
         'DocumentRWA.sol/**',
-        'Organization.sol/**', 
+        'Organization.sol/**',
         'UserProfile.sol/**',
         // 'Message.sol/**', // removed to avoid incorrect contract linking/decoding
-        'NFT.sol/**',
+        // 'NFT.sol/**',
       ],
       deployments: {
         DocumentRWA: {
           56: '0x1150cf86b0611e392729a76c215d2ed1d5c98363', // BNB Smart Chain
           11155111: '0xcc5a0d6268d70811edad77799f2168afe6382e89', // Sepolia (if needed)
+          97: '0xb69929057eB74181aC89DA3012e25a705f6B1FDc',
         },
         Organization: {
           56: '0x5dfb2ee27b1f0d638425a6665818ff86c7021be1', // BNB Smart Chain
+          97: '0x5DFb2ee27B1F0d638425A6665818ff86c7021Be1',
         },
         UserProfile: {
           56: '0x5d6e20e003c431bd36e293c6898e6b0356737f26', // BNB Smart Chain
+          97: '0x1150cF86b0611e392729a76c215D2ED1d5c98363',
         },
         // Message: {
         //   56: '0x0dcc9cf9f1292f7a09b5b37047acde2e3d873b0d', // removed
         //   11155111: '0xcc5a0d6268d70811edad77799f2168afe6382e89', // removed
         // },
-        NFT: {
-          56: '0xb69929057eb74181ac89da3012e25a705f6b1fdc', // BNB Smart Chain
-        },
+        // SV3NetworkNFT: {
+        //   56: '0xb69929057eb74181ac89da3012e25a705f6b1fdc', // BNB Smart Chain
+        // },
       },
     }),
   ],
