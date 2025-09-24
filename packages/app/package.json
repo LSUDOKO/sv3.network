@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint --fix",
     "wagmi": "wagmi generate",
+    "typecheck": "tsc --noEmit",
     "db:migrate": "bun run src/db/migrate.ts",
     "db:migrate:up": "bun run src/db/migrate.ts up",
     "db:migrate:down": "bun run src/db/migrate.ts down",

@@ -6,7 +6,7 @@ import { type ReactNode, useState } from 'react'
 import { type State, WagmiProvider } from 'wagmi'
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 
-import { getConfig } from '@/config'
+import { config } from '@/config'
 
 type Props = {
   children: ReactNode
@@ -14,7 +14,6 @@ type Props = {
 }
 
 export function Providers({ children, initialState }: Props) {
-  const [config] = useState(() => getConfig())
   const [queryClient] = useState(() => new QueryClient())
 
   return (

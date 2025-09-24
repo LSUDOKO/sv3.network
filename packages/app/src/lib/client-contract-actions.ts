@@ -101,40 +101,107 @@ export function useAddMemberToOrganization() {
 }
 
 // Document Client Actions
-export function useCreateDocument() {
-  const { writeContractAsync, data: hash, isPending, error } = useWriteContract()
+export function useCreateDocumentContract() {
+  const { writeContractAsync, data: hash, isPending, error, isSuccess } = useWriteContract()
 
-  const createDocument = async (organizationId: bigint, title: string, contentHash: string, metadataHash: string) => {
-    const txHash = await writeContractAsync({
-      abi: documentRwaAbi,
-      address: documentRwaAddress[97], // BNB Smart Chain
-      chainId: 97,
-      functionName: 'createDocument',
-      args: [organizationId, title, contentHash, metadataHash],
-    })
-    return txHash
+  const createDocumentContract = async (organizationId: bigint, title: string, contentHash: string, metadataHash: string) => {
+    try {
+      const txHash = await writeContractAsync({
+        abi: documentRwaAbi,
+        address: documentRwaAddress[97], // BNB Smart Chain
+        chainId: 97,
+        functionName: 'createDocument',
+        args: [organizationId, title, contentHash, metadataHash],
+      })
+      return txHash
+    } catch (contractError) {
+      console.error('Contract creation error:', contractError)
+      throw new Error(`Contract creation failed: ${contractError instanceof Error ? contractError.message : 'Unknown error'}`)
+    }
   }
 
   return {
-    createDocument,
+    createDocumentContract,
     hash,
     isPending,
     error,
+    isSuccess,
+  }
+}
+
+export function useUpdateDocument() {
+  const { writeContractAsync, data: hash, isPending, error, isSuccess } = useWriteContract()
+
+  const updateDocument = async (docId: bigint, title: string) => {
+    try {
+      const txHash = await writeContractAsync({
+        abi: documentRwaAbi,
+        address: documentRwaAddress[97], // BNB Smart Chain
+        chainId: 97,
+        functionName: 'updateDocument',
+        args: [docId, title],
+      })
+      return txHash
+    } catch (contractError) {
+      console.error('Contract update error:', contractError)
+      throw new Error(`Contract update failed: ${contractError instanceof Error ? contractError.message : 'Unknown error'}`)
+    }
+  }
+
+  return {
+    updateDocument,
+    hash,
+    isPending,
+    error,
+    isSuccess,
+  }
+}
+
+export function useDeleteDocument() {
+  const { writeContractAsync, data: hash, isPending, error, isSuccess } = useWriteContract()
+
+  const deleteDocument = async (docId: bigint) => {
+    try {
+      const txHash = await writeContractAsync({
+        abi: documentRwaAbi,
+        address: documentRwaAddress[97], // BNB Smart Chain
+        chainId: 97,
+        functionName: 'deleteDocument',
+        args: [docId],
+      })
+      return txHash
+    } catch (contractError) {
+      console.error('Contract deletion error:', contractError)
+      throw new Error(`Contract deletion failed: ${contractError instanceof Error ? contractError.message : 'Unknown error'}`)
+    }
+  }
+
+  return {
+    deleteDocument,
+    hash,
+    isPending,
+    error,
+    isSuccess,
   }
 }
 
 export function useSignDocument() {
-  const { writeContractAsync, data: hash, isPending, error } = useWriteContract()
+  const { writeContractAsync, data: hash, isPending, error, isSuccess } = useWriteContract()
 
   const signDocument = async (docId: bigint, signatureData: `0x${string}`) => {
-    const txHash = await writeContractAsync({
-      abi: documentRwaAbi,
-      address: documentRwaAddress[97], // BNB Smart Chain
-      chainId: 97,
-      functionName: 'signDocument',
-      args: [docId, signatureData],
-    })
-    return txHash
+    try {
+      const txHash = await writeContractAsync({
+        abi: documentRwaAbi,
+        address: documentRwaAddress[97], // BNB Smart Chain
+        chainId: 97,
+        functionName: 'signDocument',
+        args: [docId, signatureData],
+      })
+      return txHash
+    } catch (contractError) {
+      console.error('Document signing error:', contractError)
+      throw new Error(`Document signing failed: ${contractError instanceof Error ? contractError.message : 'Unknown error'}`)
+    }
   }
 
   return {
@@ -142,6 +209,7 @@ export function useSignDocument() {
     hash,
     isPending,
     error,
+    isSuccess,
   }
 }
 

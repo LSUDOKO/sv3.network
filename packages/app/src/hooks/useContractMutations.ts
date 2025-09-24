@@ -7,7 +7,7 @@ import {
   useUpdateUserProfile,
   useCreateOrganization,
   useAddMemberToOrganization,
-  useCreateDocument,
+  useCreateDocumentContract,
   useSignDocument,
   useTransactionReceipt,
 } from '@/lib/client-contract-actions'
@@ -118,7 +118,7 @@ export function useAddMemberToOrganizationMutation() {
 // Document Mutations
 export function useCreateDocumentMutation() {
   const queryClient = useQueryClient()
-  const { createDocument } = useCreateDocument()
+  const { createDocumentContract } = useCreateDocumentContract()
 
   return useMutation({
     mutationFn: async ({ 
@@ -132,7 +132,7 @@ export function useCreateDocumentMutation() {
       contentHash: string; 
       metadataHash: string 
     }) => {
-      const hash = await createDocument(organizationId, title, contentHash, metadataHash)
+      const hash = await createDocumentContract(organizationId, title, contentHash, metadataHash)
       return { hash }
     },
     onSuccess: (data) => {

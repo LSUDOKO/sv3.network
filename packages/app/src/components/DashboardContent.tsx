@@ -93,10 +93,12 @@ export function DashboardContent() {
   ]
 
   return (
-    <div className='space-y-8'>
-      <div>
-        <h1 className='text-3xl font-bold'>Dashboard Overview</h1>
-        <p className='text-muted-foreground mt-2'>
+    <div className='space-y-8 p-6'>
+      <div className='text-center'>
+        <h1 className='text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
+          Dashboard Overview
+        </h1>
+        <p className='text-muted-foreground text-lg'>
           Welcome back! Here&apos;s what&apos;s happening with your documents and signatures.
         </p>
       </div>
@@ -112,13 +114,18 @@ export function DashboardContent() {
         <h2 className='text-xl font-semibold mb-4'>Quick Actions</h2>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
           {quickActions.map((action, index) => (
-            <Button key={index} variant='outline' className='h-auto' onClick={action.action}>
-              <Card className='w-full text-left p-0 border-0 shadow-none'>
+            <Button
+              key={index}
+              variant='outline'
+              className='h-auto btn-glass transition-all-300 hover:scale-105'
+              onClick={action.action}
+            >
+              <Card className='w-full text-left p-0 border-0 shadow-none bg-transparent'>
                 <CardHeader>
-                  <div className='w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4'>
+                  <div className='w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mb-4 transition-all-300 hover:scale-110'>
                     <span className='text-2xl'>{action.icon}</span>
                   </div>
-                  <CardTitle className='text-base'>{action.title}</CardTitle>
+                  <CardTitle className='text-base font-semibold'>{action.title}</CardTitle>
                 </CardHeader>
               </Card>
             </Button>
@@ -128,13 +135,13 @@ export function DashboardContent() {
 
       <div>
         <h2 className='text-xl font-semibold mb-4'>Recent Activity</h2>
-        <Card>
+        <Card className='glass-card transition-all-300 hover:scale-[1.02]'>
           <CardContent className='p-6'>
             <div className='space-y-4'>
               {recentActivity.map((activity, index) => (
-                <div key={index} className='flex items-center space-x-4'>
-                  <div className='w-8 h-8 bg-secondary rounded-full flex items-center justify-center'>
-                    <span className='text-sm'>{activity.icon}</span>
+                <div key={index} className='flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-all-300'>
+                  <div className='w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center animate-float'>
+                    <span className='text-lg'>{activity.icon}</span>
                   </div>
                   <div className='flex-1'>
                     <p className='text-sm font-medium'>{activity.title}</p>
@@ -204,16 +211,18 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon, loading }: StatCardProps) {
   return (
-    <Card>
+    <Card className='glass-card transition-all-300 hover:scale-[1.02] hover:shadow-lg'>
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
-        <CardTitle className='text-sm font-medium'>{title}</CardTitle>
-        <span className='text-2xl'>{icon}</span>
+        <CardTitle className='text-sm font-medium text-muted-foreground'>{title}</CardTitle>
+        <span className='text-2xl animate-float'>{icon}</span>
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className='h-8 w-1/2 bg-secondary animate-pulse rounded-md' />
+          <div className='h-8 w-1/2 bg-muted/50 animate-pulse rounded-md' />
         ) : (
-          <div className='text-2xl font-bold'>{value}</div>
+          <div className='text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
+            {value}
+          </div>
         )}
       </CardContent>
     </Card>

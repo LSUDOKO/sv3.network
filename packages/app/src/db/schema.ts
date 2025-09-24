@@ -127,6 +127,7 @@ export interface DocumentsTable extends BaseTable {
   file_type: string; // MIME type
   storage_provider: StorageProvider;
   storage_path: string; // IPFS hash, Arweave ID, or S3 path
+  ipfs_url: string | null; // Direct IPFS URL for file access
   
   // Blockchain/NFT information
   nft_token_id: string | null; // NFT token ID if minted

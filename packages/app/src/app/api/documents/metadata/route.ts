@@ -2,44 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { documentId, title, description, ipfsHash, signers, creator } = await request.json()
-
-    if (!documentId || !title || !ipfsHash || !creator) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
-
-    // Create metadata object for IPFS
-    const metadata = {
-      name: title,
-      description: description || '',
-      image: `https://gateway.pinata.cloud/ipfs/${ipfsHash}`,
-      attributes: [
-        {
-          trait_type: 'Document Type',
-          value: 'Legal Document'
-        },
-        {
-          trait_type: 'Creator',
-          value: creator
-        },
-        {
-          trait_type: 'Signers Count',
-          value: signers?.length || 0
-        },
-        {
-          trait_type: 'Created At',
-          value: new Date().toISOString()
-        }
-      ],
-      properties: {
-        documentId,
-        ipfsHash,
-        signers: signers || [],
-        creator,
-        createdAt: new Date().toISOString(),
-        status: 'pending'
-      }
-    }
+    // Accept any metadata payload and pin it to IPFS
+    const body = await request.json()
 
     // Upload metadata to IPFS
     const pinataApiKey = process.env.PINATA_API_KEY
@@ -49,6 +13,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'IPFS configuration missing' }, { status: 500 })
     }
 
+    // Determine a friendly name for pin metadata (optional)
+    const metaName = (body?.title || body?.name || 'document') as string
+
     const response = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
       method: 'POST',
       headers: {
@@ -57,12 +24,11 @@ export async function POST(request: NextRequest) {
         'pinata_secret_api_key': pinataSecretKey,
       },
       body: JSON.stringify({
-        pinataContent: metadata,
+        pinataContent: body,
         pinataMetadata: {
-          name: `${title}-metadata`,
+          name: `${metaName}-metadata`,
           keyvalues: {
             type: 'document-metadata',
-            documentId: documentId.toString()
           }
         }
       }),
@@ -78,7 +44,7 @@ export async function POST(request: NextRequest) {
       success: true,
       metadataHash: result.IpfsHash,
       metadataUrl: `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`,
-      metadata
+      metadata: body,
     })
 
   } catch (error) {

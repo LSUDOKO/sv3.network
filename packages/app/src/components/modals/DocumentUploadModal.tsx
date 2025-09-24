@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
@@ -8,10 +8,11 @@ import { Textarea } from '../ui/textarea'
 import { Label } from '../ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { useAccount } from 'wagmi'
-import { useCreateDocument } from '@/app/hooks/use-document-mutations'
+import { useCreateDocument, useDocumentTransaction } from '@/app/hooks/use-document-mutations'
 import { useUserOrganizations } from '@/app/hooks/use-organization-mutations'
 import { useGetUserByWallet } from '@/app/hooks/use-user-mutations'
 import { DocumentType, DocumentPrivacy, StorageProvider } from '@/db/enums'
+import { toast } from 'sonner'
 
 interface DocumentUploadModalProps {
   isOpen: boolean
@@ -46,6 +47,8 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
   const { data: userOrganizations } = useUserOrganizations(dbUser?.id)
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [contractTxHash, setContractTxHash] = useState<`0x${string}` | undefined>()
+  const { isLoading: isTxLoading, isSuccess: isTxSuccess, error: txError } = useDocumentTransaction(contractTxHash)
 
   const handleFileSelect = (selectedFile: File) => {
     if (selectedFile.type === 'application/pdf' || selectedFile.type.startsWith('image/')) {
@@ -80,14 +83,32 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
     if (!file || !address || !dbUser) return
 
     try {
-      // Simulate IPFS upload - in a real app, you would upload to IPFS here
-      // For now, we'll create a mock file hash
-      const fileHash = `0x${Math.random().toString(16).substr(2, 64)}`
+      // Validate required fields
+      if (!metadata.title.trim()) {
+        toast.error('Document title is required')
+        return
+      }
 
-      const document = await createDocumentMutation.mutateAsync({
+      if (!metadata.organizationId && userOrganizations && userOrganizations.length > 0) {
+        toast.error('Please select an organization for this document')
+        return
+      }
+
+      // Convert file to ArrayBuffer and hash (no Node Buffer on client)
+      const fileBuffer = await file.arrayBuffer()
+
+      // Create a hash from the file content using Web Crypto API
+      const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const fileHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+      // Show initial upload status
+      toast.loading('Uploading document to IPFS...')
+
+      const result = await createDocumentMutation.mutateAsync({
         data: {
-          title: metadata.title,
-          description: metadata.description,
+          title: metadata.title.trim(),
+          description: metadata.description.trim(),
           type: metadata.type,
           privacy: metadata.privacy,
           organization_id: metadata.organizationId || undefined,
@@ -96,37 +117,53 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
             category: metadata.category,
           },
           metadata: {
-            // file_name: file.name || undefined,
-            // original_file_size: file.size,
-            // mime_type: file.type
+            file_name: file.name,
+            original_file_size: file.size,
+            mime_type: file.type,
           },
           file_data: {
             file_hash: fileHash,
             file_size: file.size,
             file_type: file.type,
             storage_provider: StorageProvider.IPFS,
-            storage_path: `/documents/${fileHash}`,
+            storage_path: '', // Will be set by IPFS upload
+            ipfs_url: '', // Will be set by IPFS upload
           },
         },
+        file: file,
         ownerId: dbUser.id,
       })
 
-      onSuccess?.(document.id)
-      onClose()
+      // Dismiss the loading toast
+      toast.dismiss()
 
-      // Reset form
-      setFile(null)
-      setMetadata({
-        title: '',
-        description: '',
-        category: '',
-        tags: [],
-        type: DocumentType.CONTRACT,
-        privacy: DocumentPrivacy.PRIVATE,
-      })
+      // If contract transaction was initiated, show transaction status
+      if (result && 'txHash' in result && result.txHash) {
+        setContractTxHash(result.txHash as `0x${string}`)
+        toast.success('Document uploaded to IPFS! Please confirm the blockchain transaction in your wallet.')
+      } else {
+        toast.success('Document uploaded successfully!')
+        onSuccess?.(result?.ipfsUrl || 'upload-success')
+        onClose()
+
+        // Reset form
+        setFile(null)
+        setMetadata({
+          title: '',
+          description: '',
+          category: '',
+          tags: [],
+          type: DocumentType.CONTRACT,
+          privacy: DocumentPrivacy.PRIVATE,
+        })
+      }
     } catch (error) {
+      // Dismiss any loading toasts
+      toast.dismiss()
+      
       // Error handling is done in the mutation hook
       console.error('Upload failed:', error)
+      toast.error(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
@@ -142,19 +179,91 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
     updateMetadata('tags', tags)
   }
 
-  // const isFormValid = metadata.title.trim() && file && dbUser
+  // Enhanced form validation
+  const isFormValid =
+    metadata.title.trim() &&
+    file &&
+    dbUser &&
+    (userOrganizations && userOrganizations.length > 0 ? metadata.organizationId : true)
+
+  // Handle transaction completion
+  useEffect(() => {
+    if (isTxSuccess && contractTxHash) {
+      toast.success('Contract transaction confirmed! Document is now on-chain.')
+      onSuccess?.('contract-confirmed')
+      onClose()
+      // Reset state
+      setContractTxHash(undefined)
+      setFile(null)
+      setMetadata({
+        title: '',
+        description: '',
+        category: '',
+        tags: [],
+        type: DocumentType.CONTRACT,
+        privacy: DocumentPrivacy.PRIVATE,
+      })
+    }
+  }, [isTxSuccess, contractTxHash, onClose, onSuccess])
+
+  useEffect(() => {
+    if (txError) {
+      toast.error(`Contract transaction failed: ${txError.message}`)
+      // Reset transaction state to allow retry
+      setContractTxHash(undefined)
+    }
+  }, [txError])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className='max-w-2xl border border-border bg-background'>
         <DialogHeader className=''>
-          <DialogTitle className='text-xl font-medium'>Upload Document</DialogTitle>
+          <DialogTitle className='text-xl font-medium'>
+            {contractTxHash ? 'Confirming Transaction' : 'Upload Document'}
+          </DialogTitle>
           <DialogDescription className='text-muted-foreground'>
-            Upload a document to the decentralized storage network
+            {contractTxHash
+              ? 'Your document is being processed on the blockchain...'
+              : createDocumentMutation.isPending
+                ? 'Uploading document to IPFS and preparing blockchain transaction...'
+                : 'Upload a document to the decentralized storage network'}
           </DialogDescription>
         </DialogHeader>
 
         <div className='space-y-4'>
+          {/* Transaction Status */}
+          {contractTxHash && (
+            <div className='p-4 bg-muted rounded-lg border border-border'>
+              <div className='flex items-center space-x-3'>
+                <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-primary'></div>
+                <div>
+                  <p className='text-sm font-medium'>Transaction Processing</p>
+                  <p className='text-xs text-muted-foreground'>
+                    Hash: {contractTxHash.slice(0, 10)}...{contractTxHash.slice(-8)}
+                  </p>
+                  <p className='text-xs text-muted-foreground mt-1'>
+                    Waiting for blockchain confirmation... This may take a few moments.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Wallet Signature Prompt */}
+          {createDocumentMutation.isPending && !contractTxHash && (
+            <div className='p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800'>
+              <div className='flex items-center space-x-3'>
+                <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500'></div>
+                <div>
+                  <p className='text-sm font-medium text-blue-800 dark:text-blue-200'>Waiting for Wallet Signature</p>
+                  <p className='text-xs text-blue-600 dark:text-blue-400'>
+                    Please check your wallet and confirm the transaction to store the document on-chain.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* File Upload Area */}
           <div className='space-y-2'>
             <Label htmlFor='file-upload'>Document File</Label>
@@ -198,7 +307,9 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
           {/* Metadata Form */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div className='space-y-2'>
-              <Label htmlFor='title'>Document Title *</Label>
+              <Label htmlFor='title'>
+                Document Title <span className='text-red-500'>*</span>
+              </Label>
               <Input
                 id='title'
                 value={metadata.title}
@@ -258,7 +369,9 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
 
             {userOrganizations && userOrganizations.length > 0 && (
               <div className='space-y-2 w-full'>
-                <Label htmlFor='organization'>Organization</Label>
+                <Label htmlFor='organization'>
+                  Organization <span className='text-red-500'>*</span>
+                </Label>
                 <Select
                   value={metadata.organizationId || ''}
                   onValueChange={(value) => updateMetadata('organizationId', value || '')}>
@@ -266,7 +379,6 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
                     <SelectValue placeholder='Select organization' />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={DocumentType.OTHER}>Personal Document</SelectItem>
                     {userOrganizations.map((org) => (
                       <SelectItem key={org.id} value={org.id}>
                         {org.name}
@@ -303,14 +415,23 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
         </div>
 
         <div className='flex justify-end space-x-3'>
-          <Button variant='outline' onClick={onClose} disabled={createDocumentMutation.isPending}>
-            Cancel
+          <Button
+            variant='outline'
+            onClick={onClose}
+            disabled={createDocumentMutation.isPending || isTxLoading || !!contractTxHash}>
+            {contractTxHash ? 'Processing...' : 'Cancel'}
           </Button>
           <Button
             onClick={handleUpload}
-            disabled={!file || !metadata.title || !dbUser || createDocumentMutation.isPending}
+            disabled={!isFormValid || createDocumentMutation.isPending || isTxLoading || !!contractTxHash}
             className='min-w-[100px]'>
-            {createDocumentMutation.isPending ? 'Uploading...' : 'Upload Document'}
+            {createDocumentMutation.isPending
+              ? 'Waiting for signature...'
+              : isTxLoading
+                ? 'Confirming...'
+                : contractTxHash
+                  ? 'Processing...'
+                  : 'Upload Document'}
           </Button>
         </div>
       </DialogContent>

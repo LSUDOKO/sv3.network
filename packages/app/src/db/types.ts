@@ -127,6 +127,7 @@ export interface Document extends BaseEntity {
   file_type: string;
   storage_provider: StorageProvider;
   storage_path: string;
+  ipfs_url: string | null;
   
   // Blockchain/NFT information
   nft_token_id: string | null;
@@ -451,10 +452,14 @@ export interface CreateDocumentRequest {
     file_type: string;
     storage_provider: StorageProvider;
     storage_path: string;
+    ipfs_url: string;
   };
   tags?: string[];
   custom_fields?: Record<string, string | number | boolean | null>;
   metadata?: {
+    file_name?: string;
+    original_file_size?: number;
+    mime_type?: string;
     template_id?: string;
     workflow_id?: string;
     compliance_requirements?: ComplianceFramework[];
@@ -470,6 +475,10 @@ export interface UpdateDocumentRequest {
   privacy?: DocumentPrivacy;
   tags?: string[];
   custom_fields?: Record<string, string | number | boolean | null>;
+  file_data?: {
+    storage_path?: string;
+    ipfs_url?: string;
+  };
   metadata?: {
     compliance_requirements?: ComplianceFramework[];
     retention_period?: number;

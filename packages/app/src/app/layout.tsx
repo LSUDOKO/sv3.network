@@ -5,7 +5,7 @@ import { cookieToInitialState } from 'wagmi'
 import { SITE_DESCRIPTION, SITE_EMOJI, SITE_INFO, SITE_NAME, SITE_URL, SOCIAL_TWITTER } from '@/utils/site'
 import { Layout } from '@/components/Layout'
 import { Providers } from './providers'
-import { getConfig } from '@/config'
+import { config } from '@/config'
 import { Toaster } from 'sonner'
 import './globals.css'
 
@@ -50,7 +50,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout(props: PropsWithChildren) {
   const headersList = await headers()
-  const initialState = cookieToInitialState(getConfig(), headersList.get('cookie'))
+  const initialState = cookieToInitialState(config, headersList.get('cookie'))
 
   return (
     <html lang='en'>

@@ -34,6 +34,7 @@ export async function createDocument(
       file_type: data.file_data.file_type,
       storage_provider: data.file_data.storage_provider,
       storage_path: data.file_data.storage_path,
+      ipfs_url: data.file_data.ipfs_url || null,
       nft_token_id: null,
       nft_contract_address: null,
       blockchain_network: null,
@@ -205,6 +206,18 @@ export async function updateDocument(
     }
     if (updateData.metadata) {
       updates.metadata = JSON.stringify(updateData.metadata);
+    }
+    
+    // Handle file_data fields
+    if (updateData.file_data) {
+      if (updateData.file_data.storage_path !== undefined) {
+        updates.storage_path = updateData.file_data.storage_path;
+      }
+      if (updateData.file_data.ipfs_url !== undefined) {
+        updates.ipfs_url = updateData.file_data.ipfs_url;
+      }
+      // Remove the file_data object from updates since we've handled it
+      delete updates.file_data;
     }
 
     const result = await db
