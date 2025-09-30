@@ -1,109 +1,99 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { ChevronRight, MoreHorizontal } from "lucide-react"
+'use client'
 
-import { cn } from "@/lib/utils"
+import * as React from 'react'
+import { ChevronRight, Home } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from './button'
 
-function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
-  return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
+interface BreadcrumbItem {
+  label: string
+  href?: string
+  icon?: React.ReactNode
 }
 
-function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
+interface BreadcrumbProps {
+  items: BreadcrumbItem[]
+  className?: string
+  separator?: React.ReactNode
+  onItemClick?: (item: BreadcrumbItem, index: number) => void
+}
+
+function Breadcrumb({
+  items,
+  className,
+  separator = <ChevronRight className='size-4' />,
+  onItemClick,
+}: BreadcrumbProps) {
   return (
-    <ol
-      data-slot="breadcrumb-list"
-      className={cn(
-        "text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5",
-        className
+    <nav className={cn('flex items-center space-x-1 text-sm', className)}>
+      {items.map((item, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && <span className='text-muted-foreground mx-1'>{separator}</span>}
+          <Button
+            variant='ghost'
+            size='sm'
+            className={cn(
+              'h-auto p-0 text-sm font-normal',
+              index === items.length - 1
+                ? 'text-foreground cursor-default'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+            onClick={() => onItemClick?.(item, index)}
+            disabled={index === items.length - 1}>
+            {item.icon && <span className='mr-1'>{item.icon}</span>}
+            {item.label}
+          </Button>
+        </React.Fragment>
+      ))}
+    </nav>
+  )
+}
+
+interface BreadcrumbWithHomeProps extends Omit<BreadcrumbProps, 'items'> {
+  items: Omit<BreadcrumbItem, 'icon'>[]
+  showHome?: boolean
+}
+
+function BreadcrumbWithHome({ items, showHome = true, ...props }: BreadcrumbWithHomeProps) {
+  const breadcrumbItems = showHome ? [{ label: 'Home', icon: <Home className='size-4' />, href: '/' }, ...items] : items
+
+  return <Breadcrumb items={breadcrumbItems} {...props} />
+}
+
+interface BreadcrumbCompactProps {
+  currentPage: string
+  parentPages?: Array<{
+    label: string
+    href?: string
+  }>
+  className?: string
+  onNavigate?: (href: string) => void
+}
+
+function BreadcrumbCompact({ currentPage, parentPages = [], className, onNavigate }: BreadcrumbCompactProps) {
+  const allPages = [...parentPages, { label: currentPage }]
+
+  return (
+    <div className={cn('flex items-center gap-2', className)}>
+      {parentPages.length > 0 && (
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={() => onNavigate?.(parentPages[parentPages.length - 1].href || '/')}
+          className='text-muted-foreground hover:text-foreground'>
+          ← Back
+        </Button>
       )}
-      {...props}
-    />
+      <div className='flex items-center gap-1 text-sm text-muted-foreground'>
+        {allPages.map((page, index) => (
+          <React.Fragment key={index}>
+            {index > 0 && <ChevronRight className='size-3' />}
+            <span className={index === allPages.length - 1 ? 'text-foreground font-medium' : ''}>{page.label}</span>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
   )
 }
 
-function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
-  return (
-    <li
-      data-slot="breadcrumb-item"
-      className={cn("inline-flex items-center gap-1.5", className)}
-      {...props}
-    />
-  )
-}
-
-function BreadcrumbLink({
-  asChild,
-  className,
-  ...props
-}: React.ComponentProps<"a"> & {
-  asChild?: boolean
-}) {
-  const Comp = asChild ? Slot : "a"
-
-  return (
-    <Comp
-      data-slot="breadcrumb-link"
-      className={cn("hover:text-foreground transition-colors", className)}
-      {...props}
-    />
-  )
-}
-
-function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="breadcrumb-page"
-      role="link"
-      aria-disabled="true"
-      aria-current="page"
-      className={cn("text-foreground font-normal", className)}
-      {...props}
-    />
-  )
-}
-
-function BreadcrumbSeparator({
-  children,
-  className,
-  ...props
-}: React.ComponentProps<"li">) {
-  return (
-    <li
-      data-slot="breadcrumb-separator"
-      role="presentation"
-      aria-hidden="true"
-      className={cn("[&>svg]:size-3.5", className)}
-      {...props}
-    >
-      {children ?? <ChevronRight />}
-    </li>
-  )
-}
-
-function BreadcrumbEllipsis({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="breadcrumb-ellipsis"
-      role="presentation"
-      aria-hidden="true"
-      className={cn("flex size-9 items-center justify-center", className)}
-      {...props}
-    >
-      <MoreHorizontal className="size-4" />
-      <span className="sr-only">More</span>
-    </span>
-  )
-}
-
-export {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  BreadcrumbEllipsis,
-}
+export { Breadcrumb, BreadcrumbWithHome, BreadcrumbCompact }

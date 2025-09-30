@@ -53,7 +53,7 @@ export default async function RootLayout(props: PropsWithChildren) {
   const initialState = cookieToInitialState(config, headersList.get('cookie'))
 
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <head>
         <link
           rel='icon'

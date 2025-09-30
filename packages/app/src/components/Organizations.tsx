@@ -71,14 +71,14 @@ export function Organizations() {
   return (
     <div className='space-y-8'>
       <div className='flex justify-between items-center'>
-        <div>
-          <h1 className='text-3xl font-bold'>Organizations</h1>
-          <p className='text-muted-foreground mt-2'>Manage your organizations and memberships</p>
+        <div className='space-y-2'>
+          <h1 className='text-4xl font-bold gradient-text'>Organizations</h1>
+          <p className='text-muted-foreground text-lg'>Manage your organizations and memberships</p>
         </div>
 
         <Dialog open={isCreating} onOpenChange={setIsCreating}>
           <DialogTrigger asChild>
-            <Button>Create Organization</Button>
+            <Button className='btn-primary-glass'>Create Organization</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -104,7 +104,9 @@ export function Organizations() {
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={handleCreateOrganization} disabled={createOrganizationMutation.isPending || !formData.name}>
+              <Button
+                onClick={handleCreateOrganization}
+                disabled={createOrganizationMutation.isPending || !formData.name}>
                 {createOrganizationMutation.isPending ? 'Creating...' : 'Create Organization'}
               </Button>
               <Button variant='outline' onClick={() => setIsCreating(false)}>
@@ -117,31 +119,31 @@ export function Organizations() {
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {displayOrganizations.map((org) => (
-          <Card key={org.id}>
+          <Card key={org.id} className='group hover:shadow-lg transition-all-300'>
             <CardHeader>
               <div className='flex items-start justify-between mb-4'>
-                <div className='w-12 h-12 bg-primary rounded-lg flex items-center justify-center'>
+                <div className='w-14 h-14 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-all-300'>
                   <span className='text-primary-foreground text-xl font-bold'>{org.name.charAt(0).toUpperCase()}</span>
                 </div>
-                {org.isOwner && <Badge>Owner</Badge>}
+                {org.isOwner && <Badge className='bg-primary/10 text-primary border-primary/20'>Owner</Badge>}
               </div>
-              <CardTitle>{org.name}</CardTitle>
+              <CardTitle className='text-xl'>{org.name}</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className='text-muted-foreground text-sm mb-4 line-clamp-3'>{org.description}</p>
+            <CardContent className='space-y-4'>
+              <p className='text-muted-foreground text-sm line-clamp-3'>{org.description}</p>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center text-sm text-muted-foreground'>
-                  <span className='mr-1'>👥</span>
+                  <span className='mr-2'>👥</span>
                   <span>{org.memberCount} members</span>
                 </div>
-                <Button variant='link' size='sm'>
+                <Button variant='ghost' size='sm' className='text-primary hover:text-primary/80'>
                   View Details
                 </Button>
               </div>
               {org.isOwner && (
-                <div className='mt-4 pt-4 border-t border-border'>
+                <div className='pt-4 border-t border-border/50'>
                   <div className='flex space-x-2'>
-                    <Button variant='secondary' size='sm' className='flex-1'>
+                    <Button variant='secondary' size='sm' className='flex-1 btn-glass'>
                       Manage Members
                     </Button>
                     <Button variant='outline' size='sm' className='flex-1'>

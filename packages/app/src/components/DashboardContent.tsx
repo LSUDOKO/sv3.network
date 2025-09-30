@@ -94,13 +94,19 @@ export function DashboardContent() {
 
   return (
     <div className='space-y-8 p-6'>
-      <div className='text-center'>
-        <h1 className='text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
-          Dashboard Overview
-        </h1>
-        <p className='text-muted-foreground text-lg'>
-          Welcome back! Here&apos;s what&apos;s happening with your documents and signatures.
-        </p>
+      <div className='text-center space-y-4'>
+        <div className='space-y-2'>
+          <h1 className='text-4xl font-bold gradient-text'>Dashboard Overview</h1>
+          <p className='text-muted-foreground text-lg max-w-2xl mx-auto'>
+            Welcome back! Here&apos;s what&apos;s happening with your documents and signatures.
+          </p>
+        </div>
+        <div className='flex justify-center'>
+          <div className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium'>
+            <div className='size-2 bg-primary rounded-full animate-pulse' />
+            Live Updates
+          </div>
+        </div>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
@@ -111,41 +117,56 @@ export function DashboardContent() {
       </div>
 
       <div>
-        <h2 className='text-xl font-semibold mb-4'>Quick Actions</h2>
+        <div className='flex items-center justify-between mb-6'>
+          <h2 className='text-2xl font-semibold'>Quick Actions</h2>
+          <div className='text-sm text-muted-foreground'>Get started with these common tasks</div>
+        </div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
           {quickActions.map((action, index) => (
             <Button
               key={index}
               variant='outline'
-              className='h-auto btn-glass transition-all-300 hover:scale-105'
-              onClick={action.action}
-            >
-              <Card className='w-full text-left p-0 border-0 shadow-none bg-transparent'>
-                <CardHeader>
-                  <div className='w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mb-4 transition-all-300 hover:scale-110'>
-                    <span className='text-2xl'>{action.icon}</span>
-                  </div>
-                  <CardTitle className='text-base font-semibold'>{action.title}</CardTitle>
-                </CardHeader>
-              </Card>
+              className='h-auto p-6 transition-all-300 hover:bg-muted group'
+              onClick={action.action}>
+              <div className='w-full text-left space-y-4'>
+                <div className='w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all-300 bg-muted ring-1 ring-border group-hover:ring-primary/40'>
+                  <span className='text-2xl'>{action.icon}</span>
+                </div>
+                <div className='space-y-2'>
+                  <h3 className='text-base font-semibold text-left'>{action.title}</h3>
+                  <p className='text-sm text-muted-foreground text-left'>{action.description}</p>
+                </div>
+              </div>
             </Button>
           ))}
         </div>
       </div>
 
       <div>
-        <h2 className='text-xl font-semibold mb-4'>Recent Activity</h2>
-        <Card className='glass-card transition-all-300 hover:scale-[1.02]'>
+        <div className='flex items-center justify-between mb-6'>
+          <h2 className='text-2xl font-semibold'>Recent Activity</h2>
+          <Button variant='ghost' size='sm' className='text-primary hover:text-primary/80'>
+            View All
+          </Button>
+        </div>
+        <Card className='transition-all-300 hover:bg-muted/50'>
           <CardContent className='p-6'>
             <div className='space-y-4'>
               {recentActivity.map((activity, index) => (
-                <div key={index} className='flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-all-300'>
-                  <div className='w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center animate-float'>
+                <div
+                  key={index}
+                  className='flex items-center space-x-4 p-4 rounded-lg hover:bg-muted/50 transition-all-300 group'>
+                  <div className='w-12 h-12 rounded-xl flex items-center justify-center bg-muted ring-1 ring-border group-hover:ring-primary/40 transition-all-300'>
                     <span className='text-lg'>{activity.icon}</span>
                   </div>
-                  <div className='flex-1'>
-                    <p className='text-sm font-medium'>{activity.title}</p>
-                    <p className='text-xs text-muted-foreground'>{activity.description}</p>
+                  <div className='flex-1 min-w-0'>
+                    <p className='text-sm font-medium truncate'>{activity.title}</p>
+                    <p className='text-xs text-muted-foreground truncate'>{activity.description}</p>
+                  </div>
+                  <div className='text-xs text-muted-foreground'>
+                    {activity.description.includes('2 hours ago') && '2h'}
+                    {activity.description.includes('1 day ago') && '1d'}
+                    {activity.description.includes('3 days ago') && '3d'}
                   </div>
                 </div>
               ))}
@@ -211,17 +232,25 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon, loading }: StatCardProps) {
   return (
-    <Card className='glass-card transition-all-300 hover:scale-[1.02] hover:shadow-lg'>
+    <Card className='glass-card transition-all-300 hover:scale-[1.02] hover:shadow-lg group'>
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
         <CardTitle className='text-sm font-medium text-muted-foreground'>{title}</CardTitle>
-        <span className='text-2xl animate-float'>{icon}</span>
+        <div className='p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-all-300'>
+          <span className='text-2xl animate-float'>{icon}</span>
+        </div>
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className='h-8 w-1/2 bg-muted/50 animate-pulse rounded-md' />
+          <div className='h-8 w-1/2 bg-muted/50 loading-shimmer rounded-md' />
         ) : (
-          <div className='text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
-            {value}
+          <div className='space-y-1'>
+            <div className='text-3xl font-bold gradient-text'>{value}</div>
+            <div className='text-xs text-muted-foreground'>
+              {title.toLowerCase().includes('uploaded') && 'Total documents'}
+              {title.toLowerCase().includes('pending') && 'Awaiting signatures'}
+              {title.toLowerCase().includes('organizations') && 'Active memberships'}
+              {title.toLowerCase().includes('completed') && 'Successfully signed'}
+            </div>
           </div>
         )}
       </CardContent>
