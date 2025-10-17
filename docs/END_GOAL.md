@@ -2,7 +2,7 @@
 
 ## 🌐 Vision
 
-sv3.network is the **Web3-native evolution of SignVault.io** — a decentralized document, signature, and compliance platform that turns documents into **on-chain Real-World Assets (RWAs)**. Our mission is to redefine how enterprises and teams handle trust, compliance, and collaboration in the digital age.
+sv3.network is the **Web3-native evolution of SignVault.io** — a decentralized document, signature, and compliance platform that turns documents into **on-chain Real-World Assets (RWAs)**. This is a Web3 Feature track for **[SignVault.io](https://www.signvault.io)**. Our mission is to redefine how enterprises and teams handle trust, compliance, and collaboration in the digital age.
 
 ---
 
