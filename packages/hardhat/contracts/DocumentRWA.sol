@@ -11,6 +11,16 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * Handles document creation, signature management, and NFT functionality
  */
 contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
+    struct DocumentVersion {
+        uint256 versionNumber;        // Version number (1, 2, 3, ...)
+        string title;                 // Document title at this version
+        string contentHash;           // IPFS content hash at this version
+        string metadataHash;          // IPFS metadata hash at this version
+        address modifiedBy;           // Address that created this version
+        uint256 timestamp;            // Version creation timestamp
+        string changeDescription;     // Description of changes made
+    }
+
     struct Document {
         uint256 id;                    // Unique document ID (NFT token ID)
         address owner;                // Document owner wallet address
@@ -23,11 +33,13 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
         // mapping(address => bool) signatures; // Signature tracking
         uint256 createdAt;            // Creation timestamp
         uint256 lastModified;         // Last modification timestamp
+        uint256 currentVersion;       // Current version number
         bool isActive;                // Document status
     }
     mapping(uint256 => mapping(address => bool)) public docApprovers;
     mapping(uint256 => Document) public documents;
     mapping(address => uint256[]) public userDocuments;
+    mapping(uint256 => DocumentVersion[]) public documentVersions; // docId => version history
 
     uint256 public documentCount;
     uint256 public signatureCount;
@@ -37,6 +49,7 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
     event DocumentSigned(uint256 indexed docId, address indexed signer);
     event SignatureVerified(uint256 indexed docId, address indexed signer, bool isValid);
     event DocumentDeleted(uint256 indexed docId);
+    event VersionCreated(uint256 indexed docId, uint256 indexed versionNumber, address indexed modifiedBy, string changeDescription);
 
     error DocumentNotFound();
     error Unauthorized();
@@ -45,6 +58,8 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
     error NotAuthorizedSigner();
     error OrganizationNotFound();
     error InvalidDocumentTitle();
+    error VersionNotFound();
+    error InvalidPagination();
 
     modifier onlyDocumentOwner(uint256 docId) {
         require(documents[docId].owner == msg.sender, "Only document owner");
@@ -95,7 +110,20 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
         doc.metadataHash = metadataHash;
         doc.createdAt = block.timestamp;
         doc.lastModified = block.timestamp;
+        doc.currentVersion = 1;
         doc.isActive = true;
+
+        // Create initial version
+        DocumentVersion memory initialVersion = DocumentVersion({
+            versionNumber: 1,
+            title: title,
+            contentHash: contentHash,
+            metadataHash: metadataHash,
+            modifiedBy: msg.sender,
+            timestamp: block.timestamp,
+            changeDescription: "Initial version"
+        });
+        documentVersions[docId].push(initialVersion);
 
         // Mint NFT to document owner
         _mint(msg.sender, docId);
@@ -384,5 +412,199 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
 
     function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
         return super.supportsInterface(interfaceId);
+    }
+
+    // ============ Version History Functions ============
+
+    /**
+     * @dev Get version history for a document with pagination
+     * @param docId Document ID
+     * @param offset Starting index for pagination (0-based)
+     * @param limit Maximum number of versions to return
+     * @return versions Array of document versions
+     * @return totalCount Total number of versions available
+     */
+    function getVersionHistory(
+        uint256 docId,
+        uint256 offset,
+        uint256 limit
+    )
+        external
+        view
+        documentExists(docId)
+        returns (DocumentVersion[] memory versions, uint256 totalCount)
+    {
+        DocumentVersion[] storage allVersions = documentVersions[docId];
+        totalCount = allVersions.length;
+
+        if (offset >= totalCount) {
+            revert InvalidPagination();
+        }
+
+        // Calculate actual number of items to return
+        uint256 end = offset + limit;
+        if (end > totalCount) {
+            end = totalCount;
+        }
+        uint256 resultCount = end - offset;
+
+        // Create result array
+        versions = new DocumentVersion[](resultCount);
+        for (uint256 i = 0; i < resultCount; i++) {
+            versions[i] = allVersions[offset + i];
+        }
+
+        return (versions, totalCount);
+    }
+
+    /**
+     * @dev Get all version history for a document (no pagination)
+     * @param docId Document ID
+     * @return versions Array of all document versions
+     */
+    function getAllVersionHistory(uint256 docId)
+        external
+        view
+        documentExists(docId)
+        returns (DocumentVersion[] memory versions)
+    {
+        return documentVersions[docId];
+    }
+
+    /**
+     * @dev Get total number of versions for a document
+     * @param docId Document ID
+     * @return count Total version count
+     */
+    function getVersionCount(uint256 docId)
+        external
+        view
+        documentExists(docId)
+        returns (uint256 count)
+    {
+        return documentVersions[docId].length;
+    }
+
+    /**
+     * @dev Get a specific version of a document
+     * @param docId Document ID
+     * @param versionNumber Version number to retrieve (1-based)
+     * @return version The requested document version
+     */
+    function getSpecificVersion(uint256 docId, uint256 versionNumber)
+        external
+        view
+        documentExists(docId)
+        returns (DocumentVersion memory version)
+    {
+        require(versionNumber > 0, "Version number must be greater than 0");
+        require(versionNumber <= documentVersions[docId].length, "Version does not exist");
+
+        // Version numbers are 1-based, array indices are 0-based
+        return documentVersions[docId][versionNumber - 1];
+    }
+
+    /**
+     * @dev Get the latest version of a document
+     * @param docId Document ID
+     * @return version The latest document version
+     */
+    function getLatestVersion(uint256 docId)
+        external
+        view
+        documentExists(docId)
+        returns (DocumentVersion memory version)
+    {
+        DocumentVersion[] storage versions = documentVersions[docId];
+        require(versions.length > 0, "No versions exist");
+        return versions[versions.length - 1];
+    }
+
+    /**
+     * @dev Get version history in reverse order (latest first) with pagination
+     * @param docId Document ID
+     * @param offset Starting index from the end (0 = latest)
+     * @param limit Maximum number of versions to return
+     * @return versions Array of document versions in reverse order
+     * @return totalCount Total number of versions available
+     */
+    function getVersionHistoryReverse(
+        uint256 docId,
+        uint256 offset,
+        uint256 limit
+    )
+        external
+        view
+        documentExists(docId)
+        returns (DocumentVersion[] memory versions, uint256 totalCount)
+    {
+        DocumentVersion[] storage allVersions = documentVersions[docId];
+        totalCount = allVersions.length;
+
+        if (offset >= totalCount) {
+            revert InvalidPagination();
+        }
+
+        // Calculate actual number of items to return
+        uint256 resultCount = limit;
+        if (offset + limit > totalCount) {
+            resultCount = totalCount - offset;
+        }
+
+        // Create result array in reverse order
+        versions = new DocumentVersion[](resultCount);
+        for (uint256 i = 0; i < resultCount; i++) {
+            uint256 reverseIndex = totalCount - 1 - offset - i;
+            versions[i] = allVersions[reverseIndex];
+        }
+
+        return (versions, totalCount);
+    }
+
+    /**
+     * @dev Create a new version when document is updated
+     * @param docId Document ID
+     * @param newTitle New document title
+     * @param newContentHash New IPFS content hash
+     * @param newMetadataHash New IPFS metadata hash
+     * @param changeDescription Description of changes made
+     */
+    function createNewVersion(
+        uint256 docId,
+        string memory newTitle,
+        string memory newContentHash,
+        string memory newMetadataHash,
+        string memory changeDescription
+    )
+        external
+        onlyDocumentOwner(docId)
+        documentExists(docId)
+        activeDocument(docId)
+    {
+        require(bytes(newTitle).length >= 3 && bytes(newTitle).length <= 100, "Title must be 3-100 characters");
+        _validateIPFSHash(newContentHash);
+        _validateIPFSHash(newMetadataHash);
+
+        Document storage doc = documents[docId];
+        doc.currentVersion++;
+        doc.title = newTitle;
+        doc.contentHash = newContentHash;
+        doc.metadataHash = newMetadataHash;
+        doc.lastModified = block.timestamp;
+
+        // Create new version entry
+        DocumentVersion memory newVersion = DocumentVersion({
+            versionNumber: doc.currentVersion,
+            title: newTitle,
+            contentHash: newContentHash,
+            metadataHash: newMetadataHash,
+            modifiedBy: msg.sender,
+            timestamp: block.timestamp,
+            changeDescription: changeDescription
+        });
+        documentVersions[docId].push(newVersion);
+
+        emit VersionCreated(docId, doc.currentVersion, msg.sender, changeDescription);
+        emit DocumentUpdated(docId, newTitle);
     }
 }
