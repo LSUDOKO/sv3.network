@@ -10,7 +10,7 @@ The best way to contribute is by reporting issues or submitting pull requests.
 
 ### Reporting Issues
 
-If you find a bug or have a feature request, please check the **[Issues tab](https://github.com/your-org/sv3.network/issues)** to see if it has already been reported. If not, feel free to open a new issue with a clear title and a detailed description.
+If you find a bug or have a feature request, please check the **[Issues tab](https://github.com/SignVault/sv3.network/issues)** to see if it has already been reported. If not, feel free to open a new issue with a clear title and a detailed description.
 
 ### Submitting Pull Requests
 
