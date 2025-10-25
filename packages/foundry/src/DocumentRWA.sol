@@ -716,6 +716,7 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
         template.isPublic = isPublic;
 
         // Add template fields
+        mapping(bytes32 => bool) memory fieldNamesSeen;
         for (uint256 i = 0; i < fieldNames.length; i++) {
             require(bytes(fieldNames[i]).length > 0, "Field name cannot be empty");
             require(bytes(fieldNames[i]).length <= 64, "Field name too long");
@@ -724,9 +725,9 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
             require(bytes(defaultValues[i]).length <= 128, "Default too long");
             // Optional allow-list if types remain strings
             require(_isAllowedFieldType(fieldTypes[i]), "Unsupported field type");
-            for (uint256 j = i + 1; j < fieldNames.length; j++) {
-            require(keccak256(bytes(fieldNames[i])) != keccak256(bytes(fieldNames[j])), "Duplicate field name");
-       }
+            bytes32 fieldNameHash = keccak256(bytes(fieldNames[i]));
+            require(!fieldNamesSeen[fieldNameHash], "Duplicate field name");
+            fieldNamesSeen[fieldNameHash] = true;
             
             template.fields.push(TemplateField({
                 fieldName: fieldNames[i],
