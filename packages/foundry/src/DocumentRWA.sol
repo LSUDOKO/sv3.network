@@ -21,11 +21,12 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
         string changeDescription;     // Description of changes made
     }
 
+    enum FieldType { TEXT, NUMBER, DATE, ADDRESS, BOOL, BYTES }
     struct TemplateField {
-        string fieldName;             // Name of the field (e.g., "Title", "Date", "Amount")
-        string fieldType;             // Type of field (e.g., "text", "number", "date", "address")
-        bool isRequired;              // Whether the field is mandatory
-        string defaultValue;          // Default value for the field
+        string fieldName;      // consider <= 64 chars
+        FieldType fieldType;
+        bool isRequired;
+        string defaultValue;   // consider <= 128 chars
     }
 
     struct DocumentTemplate {
@@ -93,6 +94,9 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
     error InvalidTemplateName();
     error InvalidTemplateField();
     error TemplateNotActive();
+    error InvalidFieldType();
+    error DuplicateFieldName();
+    error TooManyFields();
 
     modifier onlyDocumentOwner(uint256 docId) {
         require(documents[docId].owner == msg.sender, "Only document owner");
@@ -398,6 +402,23 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
     }
 
     /**
+     * @dev Internal function to check if field type is allowed
+     * @param fieldType The field type to validate
+     * @return bool True if field type is allowed
+     */
+    function _isAllowedFieldType(string memory fieldType) internal pure returns (bool) {
+        bytes32 typeHash = keccak256(bytes(fieldType));
+        return (
+            typeHash == keccak256(bytes("text")) ||
+            typeHash == keccak256(bytes("number")) ||
+            typeHash == keccak256(bytes("date")) ||
+            typeHash == keccak256(bytes("address")) ||
+            typeHash == keccak256(bytes("bool")) ||
+            typeHash == keccak256(bytes("bytes"))
+        );
+    }
+
+    /**
      * @dev Internal function to remove document from user's list
      */
     function _removeFromUserDocuments(address user, uint256 docId) internal {
@@ -680,7 +701,7 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
         require(fieldNames.length == fieldTypes.length, "Field arrays length mismatch");
         require(fieldNames.length == isRequired.length, "Field arrays length mismatch");
         require(fieldNames.length == defaultValues.length, "Field arrays length mismatch");
-        require(fieldNames.length > 0, "Template must have at least one field");
+        require(fieldNames.length > 0 && fieldNames.length <= 50, "Template must have 1-50 fields");
         _validateIPFSHash(contentStructure);
 
         templateCount++;
@@ -698,10 +719,37 @@ contract DocumentRWA is ERC721, ERC721URIStorage, Ownable {
         template.isActive = true;
         template.isPublic = isPublic;
 
-        // Add template fields
+        // Add template fields with validation
         for (uint256 i = 0; i < fieldNames.length; i++) {
-            require(bytes(fieldNames[i]).length > 0, "Field name cannot be empty");
-            require(bytes(fieldTypes[i]).length > 0, "Field type cannot be empty");
+            // Validate field name length
+            require(
+                bytes(fieldNames[i]).length >= 1 && bytes(fieldNames[i]).length <= 100,
+                "Field name must be 1-100 characters"
+            );
+            
+            // Validate field type
+            require(
+                bytes(fieldTypes[i]).length > 0,
+                "Field type cannot be empty"
+            );
+            require(
+                _isAllowedFieldType(fieldTypes[i]),
+                "Invalid field type. Allowed: text, number, date, address, bool, bytes"
+            );
+            
+            // Validate default value length
+            require(
+                bytes(defaultValues[i]).length <= 500,
+                "Default value too long (max 500 characters)"
+            );
+            
+            // Check for duplicate field names by comparing with previously added fields
+            for (uint256 j = 0; j < i; j++) {
+                require(
+                    keccak256(bytes(fieldNames[i])) != keccak256(bytes(fieldNames[j])),
+                    "Duplicate field name"
+                );
+            }
             
             template.fields.push(TemplateField({
                 fieldName: fieldNames[i],
